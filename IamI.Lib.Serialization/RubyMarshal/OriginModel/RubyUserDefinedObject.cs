@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
@@ -18,17 +20,42 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             if (name == null) name = type.Name;
             if (UserDefinedTypes.ContainsKey(name))
             {
-                Logger.Default.Warning($"Trying to override register ruby marshal user defined object: {name} to {type.FullName}");
+                Logger.Default.Warning($"Trying to override register ruby marshal user defined object: [{name}] from {UserDefinedTypes[name].FullName} to {type.FullName}");
                 UserDefinedTypes[name] = type;
             }
-            else UserDefinedTypes.Add(name, type);
+            else
+            {
+                Logger.Default.Debug($"Registered ruby marshal user defined object: [{name}] {type.FullName}");
+                UserDefinedTypes.Add(name, type);
+            }
         }
+
+        /// <summary>
+        /// 通过反射扫描目标程序集，将其中包含有 RubyUserDefinedObjectAttribute 特性的类均予以注册。
+        /// </summary>
+        /// <param name="assembly">要扫描的目标程序集。</param>
+        public static void RegisterUserDefinedInAssembly(Assembly assembly)
+        {
+            foreach (var type in assembly.ExportedTypes.Where(type => Attribute.IsDefined(type, typeof(RubyUserDefinedObjectAttribute))))
+                // For each scanned type, Register it to UserDefinedTypes.
+                RegisterUserDefinedType(type, ((RubyUserDefinedObjectAttribute) Attribute.GetCustomAttribute(type, typeof(RubyUserDefinedObjectAttribute))).Keyword);
+        }
+
+        static RubyUserDefinedObject() { RegisterUserDefinedInAssembly(typeof(RubyUserDefinedObject).Assembly); }
 
         public static RubyUserDefinedObject TryGetUserDefinedObject(string type)
         {
             if (UserDefinedTypes.ContainsKey(type)) return Activator.CreateInstance(UserDefinedTypes[type]) as RubyUserDefinedObject;
             return null;
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public class RubyUserDefinedObjectAttribute : Attribute
+    {
+        public string Keyword { get; set; }
+
+        public RubyUserDefinedObjectAttribute(string keyword) { Keyword = keyword; }
     }
 
     public class DefaultRubyUserDefinedDumpObject : RubyUserDefinedObject

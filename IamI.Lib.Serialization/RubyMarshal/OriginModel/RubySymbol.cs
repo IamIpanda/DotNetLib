@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
     [Serializable]
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Symbol {" + nameof(Name) + "}")]
     public class RubySymbol : RubyObject
     {
         private static readonly Dictionary<string, RubySymbol> symbols = new Dictionary<string, RubySymbol>();

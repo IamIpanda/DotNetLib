@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
     [Serializable]
-    [System.Diagnostics.DebuggerDisplay("RubyHash: Count = {" + nameof(Count) + "}")]
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Hash, Count = {" + nameof(Count) + "}")]
     [System.Diagnostics.DebuggerTypeProxy(typeof(RubyHashDebugView))]
     public class RubyHash : RubyObject, IEnumerable<KeyValuePair<object, object>>
     {

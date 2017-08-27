@@ -4,6 +4,7 @@ using System.Text;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Object, Class = {ClassName.Name}")]
     [System.Diagnostics.DebuggerTypeProxy(typeof(RubyObjectDebugView))]
     [Serializable]
     public class RubyObject : ICloneable
@@ -18,7 +19,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         protected RubySymbol class_name;
         public virtual RubySymbol ClassName { get { return class_name ?? (class_name = RubySymbol.GetSymbol("Object")); } set { class_name = value; } }
 
-        public override string ToString() { return "#<" + ClassName + ">"; }
+        public override string ToString() { return $"#<{ClassName.Name}>"; }
 
         public virtual Encoding Encoding { get; set; }
 

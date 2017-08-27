@@ -36,7 +36,10 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// static int r_byte(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
-        public int ReadByte() { return m_stream.ReadByte(); }
+        public int ReadByte()
+        {
+            return m_stream.ReadByte();
+        }
 
         public static int ReadLong(BinaryReader reader)
         {
@@ -72,13 +75,19 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// </summary>
         /// <param name="len"></param>
         /// <returns></returns>
-        public byte[] ReadBytes0(int len) { return m_reader.ReadBytes(len); }
+        public byte[] ReadBytes0(int len)
+        {
+            return m_reader.ReadBytes(len);
+        }
 
         /// <summary>
         /// #define r_bytes(arg) r_bytes0(r_long(arg), (arg))
         /// </summary>
         /// <returns></returns>
-        public byte[] ReadBytes() { return ReadBytes0(ReadLong()); }
+        public byte[] ReadBytes()
+        {
+            return ReadBytes0(ReadLong());
+        }
 
         /// <summary>
         /// static ID r_symlink(struct load_arg *arg)
@@ -163,7 +172,10 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// static VALUE r_unique(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
-        public RubySymbol ReadUnique() { return ReadSymbol(); }
+        public RubySymbol ReadUnique()
+        {
+            return ReadSymbol();
+        }
 
         /// <summary>
         /// static VALUE r_string(struct load_arg *arg)
@@ -173,7 +185,6 @@ namespace IamI.Lib.Serialization.RubyMarshal
         {
             var raw = ReadBytes();
             var v = new RubyString(raw);
-            // TODO: detecting encoding
             if ((raw.Length > 2) && (raw[0] == 120) && (raw[1] == 156))
             {
                 v.Encoding = Encoding.Default;
@@ -221,7 +232,10 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        public object Entry(object v) { return Entry0(v, m_objects.Count); }
+        public object Entry(object v)
+        {
+            return Entry0(v, m_objects.Count);
+        }
 
         /// <summary>
         /// static VALUE r_leave(VALUE v, struct load_arg *arg)

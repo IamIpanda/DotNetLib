@@ -4,6 +4,7 @@ using System.IO;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClass
 {
+    [RubyUserDefinedObject("Color")]
     public class RubyColor : RubyUserDefinedObject
     {
         public double Red { get; set; }
@@ -31,7 +32,5 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             writer.Write(Blue);
             writer.Write(Alpha);
         }
-
-        static RubyColor() { RegisterUserDefinedType(typeof(RubyColor), "color"); }
     }
 }

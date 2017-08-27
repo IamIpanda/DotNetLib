@@ -3,6 +3,7 @@ using System.Text;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Regexp /{" + nameof(Pattern) + "}/")]
     [Serializable]
     public class RubyRegexp : RubyObject
     {

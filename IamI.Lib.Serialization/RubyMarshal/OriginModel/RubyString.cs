@@ -4,9 +4,10 @@ using System.Text;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::String {" + nameof(Text) + "}")]
     [System.Diagnostics.DebuggerTypeProxy(typeof(RubyStringDebugView))]
     [Serializable]
-    public class RubyString : RubyObject, ICloneable
+    public class RubyString : RubyObject
     {
         [Serializable]
         internal class RubyStringDebugView

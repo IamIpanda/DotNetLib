@@ -38,29 +38,29 @@ namespace IamI.Lib.Serialization.RubyMarshal
 
         public static void WriteLong(long value, BinaryWriter writer)
         {
-            if (value == 0) writer.Write((byte)0);
-            else if (value > 0 && value < 0x7b) writer.Write((byte)(value + 5));
-            else if (value < 0 && value > -124) writer.Write((sbyte)(value - 5));
+            if (value == 0) writer.Write((byte) 0);
+            else if (value > 0 && value < 0x7b) writer.Write((byte) (value + 5));
+            else if (value < 0 && value > -124) writer.Write((sbyte) (value - 5));
             else
             {
                 sbyte num2;
                 var buffer = new byte[5];
-                buffer[1] = (byte)(value & 0xff);
-                buffer[2] = (byte)((value >> 8) & 0xff);
-                buffer[3] = (byte)((value >> 0x10) & 0xff);
-                buffer[4] = (byte)((value >> 0x18) & 0xff);
+                buffer[1] = (byte) (value & 0xff);
+                buffer[2] = (byte) ((value >> 8) & 0xff);
+                buffer[3] = (byte) ((value >> 0x10) & 0xff);
+                buffer[4] = (byte) ((value >> 0x18) & 0xff);
                 var index = 4;
                 if (value >= 0)
                 {
                     while (buffer[index] == 0) index--;
-                    num2 = (sbyte)index;
+                    num2 = (sbyte) index;
                 }
                 else
                 {
                     while (buffer[index] == 0xff) index--;
-                    num2 = (sbyte)-index;
+                    num2 = (sbyte) -index;
                 }
-                buffer[0] = (byte)num2;
+                buffer[0] = (byte) num2;
                 writer.Write(buffer, 0, index + 1);
             }
         }
@@ -69,10 +69,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// static void w_long(long x, struct dump_arg *arg)
         /// </summary>
         /// <param name="value"></param>
-        public void WriteLong(long value)
-        {
-            WriteLong(value, m_writer);
-        }
+        public void WriteLong(long value) { WriteLong(value, m_writer); }
 
         /// <summary>
         /// static void w_bytes(const char *s, long n, struct dump_arg *arg)
@@ -153,14 +150,11 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// <param name="check"></param>
         public void WriteExtended(object klass, bool check)
         {
-            var fobj = klass as RubyObject;
-            if (fobj != null)
+            if (!(klass is RubyObject fobj)) return;
+            foreach (var item in fobj.ExtendModules)
             {
-                foreach (var item in fobj.ExtendModules)
-                {
-                    WriteByte(RubyMarshal.Types.Extended);
-                    WriteUnique(item.Symbol);
-                }
+                WriteByte(RubyMarshal.Types.Extended);
+                WriteUnique(item.Symbol);
             }
         }
 
@@ -239,6 +233,8 @@ namespace IamI.Lib.Serialization.RubyMarshal
         public void WriteInstanceVariable(RubyObject obj, Dictionary<RubySymbol, object> tbl)
         {
             var num = tbl?.Count ?? 0;
+            if (tbl != null && tbl.ContainsKey(RubyMarshal.IDs.encoding) && num > 0) num -= 1;
+            if (tbl != null && tbl.ContainsKey(RubyMarshal.IDs.E) && num > 0) num -= 1;
 
             WriteEncoding(obj, num);
             if (tbl == null) return;
@@ -297,12 +293,12 @@ namespace IamI.Lib.Serialization.RubyMarshal
                 var fobj = obj as RubyObject;
                 var hasiv = false;
                 if (fobj != null) hasiv = (obj is RubyArray || obj is RubyHash) && fobj.InstanceVariables.Count > 0;
-                if (fobj is RubyString) hasiv |= StringStyle == RubyMarshal.StringStyleType.Style19 && fobj.Encoding != null;
-                
+                if (fobj is RubyString ruby_string) hasiv |= StringStyle == RubyMarshal.StringStyleType.Style19 && fobj.Encoding != null && ruby_string.Text.Length > 0;
+
                 if (obj is DefaultRubyUserDefinedMarshalDumpObject default_ruby_user_defined_marshal_dump_object)
                 {
                     if (hasiv) WriteByte(RubyMarshal.Types.InstanceVariable);
-                    WriteClass(RubyMarshal.Types.UserMarshal, obj, false); 
+                    WriteClass(RubyMarshal.Types.UserMarshal, obj, false);
                     default_ruby_user_defined_marshal_dump_object.Write(m_writer);
                     if (hasiv) WriteObjectInstanceVariable(fobj);
                     m_objects.Add(obj, m_objects.Count);

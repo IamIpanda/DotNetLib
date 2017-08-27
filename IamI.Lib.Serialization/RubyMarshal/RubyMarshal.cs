@@ -10,7 +10,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// 当前 RubyMarshal 的主版本号。
         /// </summary>
         public const byte MarshalMajor = 4;
-        
+
         /// <summary>
         /// 当前 RubyMarshal 的副版本号。
         /// </summary>
@@ -22,7 +22,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
             /// 用以表示编码的固定 Magic Symbol。
             /// </summary>
             public static RubySymbol encoding = RubySymbol.GetSymbol("encoding");
-            
+
             /// <summary>
             /// 用以表示 StringStyleType::Style19 的固定 Magic Symbol。
             /// </summary>
@@ -74,9 +74,10 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// </summary>
         /// <param name="output">目标输出流</param>
         /// <param name="param">要写入的对象</param>
-        public static void Dump(Stream output, object param)
+        /// <param name="string_style_type">指示应用何种方式写入 String 类别。</param>
+        public static void Dump(Stream output, object param, StringStyleType string_style_type = StringStyleType.Style19)
         {
-            var writer = new RubyMarshalWriter(output);
+            var writer = new RubyMarshalWriter(output) {StringStyle = string_style_type};
             writer.Dump(param);
         }
 
@@ -90,6 +91,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
             /// 使用 Ruby 1.8.6 之前，Marshal 4.8 的 RubyString 写入方式。
             /// </summary>
             Style18,
+
             /// <summary>
             /// 使用 Ruby 1.9.2 之后，Marshal 4.8 的 RubyString 写入方式。
             /// 更早版本的 Ruby 可能不能正确读取以此法写入的文件。

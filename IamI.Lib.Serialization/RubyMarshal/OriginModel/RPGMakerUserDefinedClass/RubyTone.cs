@@ -4,6 +4,7 @@ using System.IO;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClass
 {
+    [RubyUserDefinedObject("Tone")]
     public class RubyTone : RubyUserDefinedObject
     {
         public double Red { get; set; }
@@ -34,5 +35,4 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
 
         static RubyTone() { RegisterUserDefinedType(typeof(RubyTone), "tone"); }
     }
-
 }

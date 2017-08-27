@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
     [Serializable]
-    [System.Diagnostics.DebuggerDisplay("RubyClass: " + nameof(Name))]
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Class: " + nameof(Name))]
     public sealed class RubyClass : RubyObject
     {
         public string Name { get; }

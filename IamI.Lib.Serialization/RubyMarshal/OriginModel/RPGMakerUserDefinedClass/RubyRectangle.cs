@@ -4,15 +4,16 @@ using System.IO;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClass
 {
+    [RubyUserDefinedObject("Rectangle")]
     public class RubyRectangle : RubyUserDefinedObject
     {
         public double Left { get; set; }
         public double Top { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
-        
+
         public override object TransformToNativeModel() { return new Rectangle(Convert.ToInt32(Left), Convert.ToInt32(Top), Convert.ToInt32(Width), Convert.ToInt32(Height)); }
-        
+
         public override RubyUserDefinedObject Read(BinaryReader reader)
         {
             reader.ReadByte(); // LENGTH = 37
@@ -31,8 +32,5 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             writer.Write(Width);
             writer.Write(Height);
         }
-        
-        static RubyRectangle() { RegisterUserDefinedType(typeof(RubyRectangle), "rectangle"); }
     }
-
 }

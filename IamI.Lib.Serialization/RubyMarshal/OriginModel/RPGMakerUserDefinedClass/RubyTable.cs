@@ -5,6 +5,7 @@ using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClass
 {
+    [RubyUserDefinedObject("Table")]
     public class RubyTable : RubyUserDefinedObject
     {
         private short[,,] value;
@@ -67,7 +68,6 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             }
         }
 
-
         public override RubyUserDefinedObject Read(BinaryReader reader)
         {
             RubyMarshalReader.ReadLong(reader); // Length Value 1
@@ -90,11 +90,6 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             writer.Write(ZSize);
             writer.Write(XSize * YSize * ZSize); // Length Value 2
             for (var i = 0; i < ZSize; i++) for (var j = 0; j < YSize; j++) for (var k = 0; k < XSize; k++) writer.Write(value[k, j, i]);
-        }
-
-        static RubyTable()
-        {
-            RubyUserDefinedObject.RegisterUserDefinedType(typeof(RubyTable), "Table");
         }
     }
 }

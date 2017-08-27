@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
     [Serializable]
-    [System.Diagnostics.DebuggerDisplay("RubyArray: Count = {" + nameof(Count) + "}")]
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Array, Count = {" + nameof(Count) + "}")]
     [System.Diagnostics.DebuggerTypeProxy(typeof(RubyArrayDebugView))]
     public sealed class RubyArray : RubyObject, IEnumerable<object>
     {
@@ -121,6 +121,8 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.RootHidden)]
             public object[] Objects => hashtable.ToArray();
         }
+
+        public override string ToString() { return $"Array [Count = {Count}]"; }
 
         /// <summary>
         /// 返回此结构体的拷贝。

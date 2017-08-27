@@ -3,6 +3,7 @@
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
     [Serializable]
+    [System.Diagnostics.DebuggerDisplay("{this.ToString()}")]
     public sealed class RubyBool : RubyObject
     {
         public static RubyBool True { get; } = new RubyBool(true);
@@ -16,7 +17,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             ClassName = RubySymbol.GetSymbol("Bool");
         }
 
-        public override string ToString() { return Value ? "Ruby::True" : "Ruby::False"; }
+        public override string ToString() { return Value ? "RubyMarshal::True" : "RubyMarshal::False"; }
 
         public static explicit operator bool(RubyBool self) { return self.Value; }
     }
