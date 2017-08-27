@@ -1,23 +1,52 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Text;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace IamI.Lib.Others._1024
 {
+    /// <summary>
+    /// 游戏的数据核心。
+    /// </summary>
     public class Core
     {
         public int GameSize { get; }
         public int Width => 2 * GameSize + 1;
         public int Height => GameSize;
         public long[, ] GameData;
+        /// <summary>
+        /// 游戏得分。
+        /// </summary>
         public long Score { get; set; }
+        /// <summary>
+        /// 指出要为玩家加多少分。
+        /// </summary>
         public long ToAddScore { get; set; } = 0;
 
-
+        /// <summary>
+        /// 表示此格上没有方块。
+        /// </summary>
         public const long None = 0;
+
+        /// <summary>
+        /// 表示此格上是背景图像（也不可通过）。
+        /// </summary>
         public const long BackGround = -1;
+
+        /// <summary>
+        /// 表示此格已超出游戏范围。
+        /// </summary>
         public const long OutOfRange = 1;
+
+        /// <summary>
+        /// 指示游戏在下一次刷新时移除这格上的值。
+        /// </summary>
         public const long WillDelete = -7;
 
+        /// <summary>
+        /// 根据给定的尺寸创建一个 Core。
+        /// </summary>
+        /// <param name="size"></param>
         public Core(int size)
         {
             GameSize = size;
@@ -25,6 +54,10 @@ namespace IamI.Lib.Others._1024
             Score = 0;
         }
 
+        /// <summary>
+        /// 复制给定的 Core。
+        /// </summary>
+        /// <param name="Mirror">克隆源</param>
         public Core(Core Mirror)
         {
             GameSize = Mirror.GameSize;
@@ -35,6 +68,12 @@ namespace IamI.Lib.Others._1024
             Score = Mirror.Score;
         }
 
+        /// <summary>
+        /// 获取给定坐标上的值。
+        /// </summary>
+        /// <param name="x">坐标 X</param>
+        /// <param name="y">坐标 Y</param>
+        /// <returns>GameData[x, y] | OutOfRange</returns>
         public long this[int x, int y]
         {
             get
@@ -48,7 +87,7 @@ namespace IamI.Lib.Others._1024
                 GameData[x, y] = value;
             }
         }
-
+        
         public List<long> this[int y]
         {
             set
@@ -58,6 +97,10 @@ namespace IamI.Lib.Others._1024
             }
         }
 
+        /// <summary>
+        /// 在此 Core 上执行给定的 Action。
+        /// </summary>
+        /// <param name="action">要执行的 Action。</param>
         public void Execute(Action action)
         {
             if (action == null) return;
@@ -74,9 +117,17 @@ namespace IamI.Lib.Others._1024
                     this[action.To.X, action.To.Y] = this[action.From.X, action.From.Y];
                     this[action.From.X, action.From.Y] = None;
                     break;
+                case ActionType.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
+        /// <summary>
+        /// 在此 Core 上执行给定的 Movement。
+        /// </summary>
+        /// <param name="movement">要执行的 Movement。</param>
         public void Execute(Movement movement)
         {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -86,7 +137,7 @@ namespace IamI.Lib.Others._1024
         }
 
         public Core AddFrom(Core source)
-        {
+        { 
             for (var i = 0; i < Width; i++)
                 for (var j = 0; j < Height; j++)
                     if (source[i, j] == WillDelete)

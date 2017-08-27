@@ -2,6 +2,9 @@
 
 namespace IamI.Lib.Others
 {
+    /// <summary>
+    /// 协助对颜色空间进行转化的类。
+    /// </summary>
     public static class ColorConverter
     {
         /// <summary>

@@ -15,29 +15,21 @@ namespace IamI.Lib.Basic.Calculator
         /// </summary>
         public PreorderExpression Expression { get; internal set; }
 
-        private CalculatorMachine()
-        {
-        }
+        private CalculatorMachine() { }
 
         /// <summary>
         /// 按照给定的多个名称，设置变量节点的值。
         /// 此为对 Expression.SetVariables 的转发。
         /// </summary>
         /// <param name="variables">变量节点的名称和变量节点的值的对应表。</param>
-        public void SetVariables(Dictionary<string, double> variables)
-        {
-            Expression.SetVariables(variables);
-        }
+        public void SetVariables(Dictionary<string, double> variables) { Expression.SetVariables(variables); }
 
         /// <summary>
         /// 依次设置变量节点，忽略那些变量节点的名称。
         /// 此为对 Expression.SetVariables 的转发。
         /// </summary>
         /// <param name="variables">变量值列表。</param>
-        public void SetVariables(IEnumerable<double> variables)
-        {
-            Expression.SetVariables(variables);
-        }
+        public void SetVariables(IEnumerable<double> variables) { Expression.SetVariables(variables); }
 
         /// <summary>
         /// 结算此计算器。
@@ -47,8 +39,7 @@ namespace IamI.Lib.Basic.Calculator
         {
             var expression_copy = new Stack<CalculatorNode.CalculatorNode>(Expression.Nodes.Reverse());
             var calculating_node = new Stack<double>();
-            while (expression_copy.Count > 0)
-                calculating_node.Push(expression_copy.Pop().Resolve(calculating_node));
+            while (expression_copy.Count > 0) calculating_node.Push(expression_copy.Pop().Resolve(calculating_node));
             return calculating_node.Pop();
         }
 
@@ -106,10 +97,6 @@ namespace IamI.Lib.Basic.Calculator
         /// </summary>
         /// <param name="expression">前序表达式</param>
         /// <returns>对应的计算器封装</returns>
-        public static CalculatorMachine FromPreorderExpression(PreorderExpression expression)
-        {
-            return new CalculatorMachine {Expression = expression};
-        }
-
+        public static CalculatorMachine FromPreorderExpression(PreorderExpression expression) { return new CalculatorMachine {Expression = expression}; }
     }
 }

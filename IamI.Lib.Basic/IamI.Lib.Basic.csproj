@@ -54,7 +54,7 @@
     <Compile Include="Time\TimeHelp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calculator\OldCalculatorRefrence.cs" />
+    <None Include="Calculator\[A]OldCalculatorRefrence.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

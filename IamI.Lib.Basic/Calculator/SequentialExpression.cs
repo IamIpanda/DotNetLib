@@ -12,24 +12,16 @@ namespace IamI.Lib.Basic.Calculator
     {
         public List<CalculatorNode.CalculatorNode> Nodes { get; internal set; }
 
-        private SequentialExpression()
-        {
-        }
+        private SequentialExpression() { }
 
         /// <summary>
         /// 将此中序表达式转化为前序表达式。
         /// 此为对 PreorderExpression.FromSeqientalExpression 的转发。
         /// </summary>
         /// <returns>所对应的前序表达式</returns>
-        public PreorderExpression ToPreorderExpression()
-        {
-            return PreorderExpression.FromSeqientialExpression(this);
-        }
+        public PreorderExpression ToPreorderExpression() { return PreorderExpression.FromSeqientialExpression(this); }
 
-        public override string ToString()
-        {
-            return string.Join(" ", Nodes.Select(node => node.ToString()).ToArray());
-        }
+        public override string ToString() { return string.Join(" ", Nodes.Select(node => node.ToString()).ToArray()); }
 
         /// <summary>
         /// 从字符串中初始化中序表达式。
@@ -52,14 +44,10 @@ namespace IamI.Lib.Basic.Calculator
                     {
                         _char = charArray[index];
                         if (_char >= '0' && _char <= '9')
-                            if (decimal_point > 1)
-                                value = value * 10 + _char - '0';
-                            else
-                                value = value + (decimal_point /= 10);
-                        else if (_char == '.')
-                            decimal_point = 1;
-                        else
-                            break;
+                            if (decimal_point > 1) value = value * 10 + _char - '0';
+                            else value = value + (decimal_point /= 10);
+                        else if (_char == '.') decimal_point = 1;
+                        else break;
                     }
                     nodes.Add(new NumberCalculatorNode {Value = value});
                 }
@@ -74,19 +62,14 @@ namespace IamI.Lib.Basic.Calculator
                     while (++index < charArray.Length)
                     {
                         _char = charArray[index];
-                        if (IsValidVariableNameChar(_char))
-                            builder.Append(_char);
-                        else
-                            break;
+                        if (IsValidVariableNameChar(_char)) builder.Append(_char);
+                        else break;
                     }
                     var name = builder.ToString();
-                    if (FunctionCalculatorNode.LegalFunctions.Contains(name))
-                        nodes.Add(new FunctionCalculatorNode {Function = name});
-                    else
-                        nodes.Add(new VariableCalculatorNode {VariableName = name});
+                    if (FunctionCalculatorNode.LegalFunctions.Contains(name)) nodes.Add(new FunctionCalculatorNode {Function = name});
+                    else nodes.Add(new VariableCalculatorNode {VariableName = name});
                 }
-                else
-                    Log.Logger.Default.Warning($"Can't realize the char '{_char}' when analyze the expression \"{expression}\". Will be Ignored.");
+                else Log.Logger.Default.Warning($"Can't realize the char '{_char}' when analyze the expression \"{expression}\". Will be Ignored.");
             }
             return new SequentialExpression {Nodes = nodes};
         }
@@ -96,12 +79,6 @@ namespace IamI.Lib.Basic.Calculator
         /// </summary>
         /// <param name="_char">变量名中所包含的字符</param>
         /// <returns></returns>
-        public static bool IsValidVariableNameChar(char _char)
-        {
-            return _char >= 'a' && _char < 'z' ||
-                   _char >= 'A' && _char <= 'Z' ||
-                   _char >= '0' && _char <= '9' ||
-                   _char == '_' || _char == '@';
-        }
+        public static bool IsValidVariableNameChar(char _char) { return _char >= 'a' && _char < 'z' || _char >= 'A' && _char <= 'Z' || _char >= '0' && _char <= '9' || _char == '_' || _char == '@'; }
     }
 }

@@ -1,12 +1,13 @@
 # IamI.Lib
-�������� .Net Framework ��ʹ�ù����д����������ɵ� SDK��
+这是我在 .Net Framework 的使用过程中代码整理而成的 SDK。
 
-�����������ݣ�
+包括以下内容：
 
-�����ռ�|˵��
+命名空间|说明
 ----|----
-IamI.Lib.Basic|�����Ե�Ӧ�ã�����־��
-IamI.Lib.Language|������ء�
-IamI.Lib.WPF|WPF ʹ����ء�
-IamI.Lib.Others|��һЩ��ֵĶ�����
-IamI.Lib.Test|�����̵Ĳ��ԡ�
+IamI.Lib.Basic|基础性的应用，如日志。
+IamI.Lib.Language|语言相关。
+IamI.Lib.WPF|WPF 使用相关。
+IamI.Lib.Serialization|序列化相关。
+IamI.Lib.Others|放一些奇怪的东西。
+IamI.Lib.Test|本工程的测试。

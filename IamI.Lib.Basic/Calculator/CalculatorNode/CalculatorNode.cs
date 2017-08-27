@@ -27,8 +27,7 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
                 return double.NaN;
             }
             var ParamNodes = new double[ChildNodeCount];
-            for (var i = 0; i < ChildNodeCount; i++)
-                ParamNodes[i] = doubleStack.Pop();
+            for (var i = 0; i < ChildNodeCount; i++) ParamNodes[i] = doubleStack.Pop();
             return Resolve(ParamNodes);
         }
 
@@ -39,10 +38,7 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
         /// <param name="parameters">计算使用的参数</param>
         /// <returns>节点计算的结果</returns>
         public abstract double Resolve(params double[] parameters);
-        
-        public virtual object Clone()
-        {
-            return MemberwiseClone();
-        }
+
+        public virtual object Clone() { return MemberwiseClone(); }
     }
 }

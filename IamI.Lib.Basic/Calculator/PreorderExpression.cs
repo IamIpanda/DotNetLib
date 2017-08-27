@@ -11,9 +11,8 @@ namespace IamI.Lib.Basic.Calculator
     {
         public Stack<CalculatorNode.CalculatorNode> Nodes { get; set; }
 
-        public Dictionary<string, VariableCalculatorNode> Variables { get; } =
-            new Dictionary<string, VariableCalculatorNode>();
-        
+        public Dictionary<string, VariableCalculatorNode> Variables { get; } = new Dictionary<string, VariableCalculatorNode>();
+
         private PreorderExpression(Stack<CalculatorNode.CalculatorNode> nodes)
         {
             Nodes = nodes;
@@ -32,10 +31,7 @@ namespace IamI.Lib.Basic.Calculator
         /// <summary>
         /// 将所有变量节点全部设置为0。
         /// </summary>
-        public void InitializeVariables()
-        {
-            Nodes.OfType<VariableCalculatorNode>().ToList().ForEach(node => node.Value = 0);
-        }
+        public void InitializeVariables() { Nodes.OfType<VariableCalculatorNode>().ToList().ForEach(node => node.Value = 0); }
 
         /// <summary>
         /// 按照给定的名称，设置变量节点的值。
@@ -44,11 +40,8 @@ namespace IamI.Lib.Basic.Calculator
         /// <param name="value">变量节点的值</param>
         public void SetVariable(string variable_name, double value)
         {
-            if (Variables.ContainsKey(variable_name))
-                Variables[variable_name].Value = value;
-            else
-                Log.Logger.Default.Warning(
-                    $"Trying to set a variable named {variable_name} = {value} in calculator, but it doesn't exists. Nothing done.");
+            if (Variables.ContainsKey(variable_name)) Variables[variable_name].Value = value;
+            else Log.Logger.Default.Warning($"Trying to set a variable named {variable_name} = {value} in calculator, but it doesn't exists. Nothing done.");
         }
 
         /// <summary>
@@ -70,28 +63,21 @@ namespace IamI.Lib.Basic.Calculator
         {
             var variable_node_list = Variables.Values.ToList();
             var value_list = values.ToList();
-            for (var i = 0; i < variable_node_list.Count && i < value_list.Count; i++)
-                variable_node_list[i].Value = value_list[i];
+            for (var i = 0; i < variable_node_list.Count && i < value_list.Count; i++) variable_node_list[i].Value = value_list[i];
         }
-        
+
         /// <summary>
         /// 按照给定的名称，设置变量节点的值。
         /// 该方法是 @SetVariable 的转发。
         /// </summary>
         /// <param name="variable_name">变量节点的名称</param>
-        public double this[string variable_name]
-        {
-            set { SetVariable(variable_name, value); }
-        }
+        public double this[string variable_name] { set { SetVariable(variable_name, value); } }
 
         /// <summary>
         /// 将此前序表达式转化为计算器。
         /// </summary>
         /// <returns>此前序表达式的计算器封装，</returns>
-        public CalculatorMachine ToCalculateMachine()
-        {
-            return CalculatorMachine.FromPreorderExpression(this);
-        }
+        public CalculatorMachine ToCalculateMachine() { return CalculatorMachine.FromPreorderExpression(this); }
 
         /// <summary>
         /// 将一个中序表达式转化为逆波兰表达式。
@@ -150,13 +136,11 @@ namespace IamI.Lib.Basic.Calculator
                             var current_node_rank = node.Rank();
                             var top_node_rank = operator_stack_top_node.Rank();
                             // 栈顶为左括号或高优先级的场合，直压栈
-                            if (operator_stack_top_node.IsLeftBracket() || current_node_rank >= top_node_rank)
-                                operator_stack.Push(node);
+                            if (operator_stack_top_node.IsLeftBracket() || current_node_rank >= top_node_rank) operator_stack.Push(node);
                             // 否则，弹栈直到满足条件，然后压栈
                             else
                             {
-                                while (operator_stack.Peek().Rank() >= current_node_rank)
-                                    number_stack.Push(operator_stack.Pop());
+                                while (operator_stack.Peek().Rank() >= current_node_rank) number_stack.Push(operator_stack.Pop());
                                 operator_stack.Push(node);
                             }
                             break;
@@ -170,8 +154,7 @@ namespace IamI.Lib.Basic.Calculator
             // ReSharper disable once InvertIf
             if (operator_stack.Count != 0)
                 // 最下面有个空操作符，不进栈
-                while (operator_stack.Count > 1)
-                    number_stack.Push(operator_stack.Pop());
+                while (operator_stack.Count > 1) number_stack.Push(operator_stack.Pop());
             return new PreorderExpression(new Stack<CalculatorNode.CalculatorNode>(number_stack));
         }
     }

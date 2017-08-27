@@ -6,6 +6,11 @@ namespace Iami.Lib.Language.Transform
 {
     public class zh_CN
     {
+        /// <summary>
+        /// 将汉字依照记述转化为拼音。
+        /// </summary>
+        /// <param name="origin">要转化的单个汉字</param>
+        /// <returns>汉字对应的拼音。如果不是汉字，会返回null。</returns>
         public string TransformToPinYin(string origin)
         {
             // 转换成 ASCII 码
@@ -17,8 +22,7 @@ namespace Iami.Lib.Language.Transform
                 return null;
             value -= 65536;
             // 勘误
-            if (wrongs.TryGetValue(value, out var answer))
-                return answer;
+            if (wrongs.TryGetValue(value, out var answer)) return answer;
             //扫表
             for (var i = pinyin_value.Length - 1; i >= 0; i--)
                 if (pinyin_value[i] <= value)

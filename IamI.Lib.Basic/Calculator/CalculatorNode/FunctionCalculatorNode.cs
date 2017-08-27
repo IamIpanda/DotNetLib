@@ -8,15 +8,9 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
         public override int ChildNodeCount => 1;
         public string Function { get; set; } = "";
 
-        public override double Resolve(params double[] parameters)
-        {
-            return ResolveFunction(parameters[0], Function);
-        }
-        
-        public override string ToString()
-        {
-            return $"[{Function}]";
-        }
+        public override double Resolve(params double[] parameters) { return ResolveFunction(parameters[0], Function); }
+
+        public override string ToString() { return $"[{Function}]"; }
 
         /// <summary>
         /// 根据函数名和参数，计算函数结果。
@@ -28,17 +22,25 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
         {
             switch (function)
             {
-                case "sin": return Math.Sin(value);
-                case "cos": return Math.Cos(value);
-                case "ln": return Math.Log(value);
-                case "lg": return Math.Log10(value);
-                case "exp": return Math.Exp(value);
-                case "sqrt": return Math.Sqrt(value);
-                case "trun": return Math.Truncate(value);
-                case "abs": return Math.Abs(value);
-                default: return 0;
+                case "sin":
+                    return Math.Sin(value);
+                case "cos":
+                    return Math.Cos(value);
+                case "ln":
+                    return Math.Log(value);
+                case "lg":
+                    return Math.Log10(value);
+                case "exp":
+                    return Math.Exp(value);
+                case "sqrt":
+                    return Math.Sqrt(value);
+                case "trun":
+                    return Math.Truncate(value);
+                case "abs":
+                    return Math.Abs(value);
+                default:
+                    return 0;
             }
         }
-
     }
 }

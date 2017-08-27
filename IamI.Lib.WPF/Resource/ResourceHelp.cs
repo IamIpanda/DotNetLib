@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.WPF.Resource
 {
@@ -148,6 +149,7 @@ namespace IamI.Lib.WPF.Resource
             var stream = new FileStream(path, FileMode.Open);
             var obj = System.Windows.Markup.XamlReader.Load(stream);
             stream.Close();
+            Logger.Default.Debug($"Loaded ResourceDictionary {path}");
             return obj as ResourceDictionary;
         }
 

@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7101FE78-1364-4DB4-A71A-98E3DFF74360}</ProjectGuid>
+    <ProjectGuid>{6EE69B6B-8F07-402B-BB2A-8875DA7A1270}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IamI.Lib.Others</RootNamespace>
-    <AssemblyName>IamI.Lib.Others</AssemblyName>
+    <RootNamespace>IamI.Lib.Serialization</RootNamespace>
+    <AssemblyName>IamI.Lib.Serialization</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -23,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,28 +31,51 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="1024\Action.cs" />
-    <Compile Include="1024\Behave.cs" />
-    <Compile Include="1024\Core.cs" />
-    <Compile Include="1024\Movement.cs" />
-    <Compile Include="ColorConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RPGMakerUserDefinedClass\RubyRectangle.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RPGMakerUserDefinedClass\RubyTable.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RPGMakerUserDefinedClass\RubyTone.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RPGMakerUserDefinedClass\RubyColor.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyArray.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyBignum.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyBool.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyClass.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyFixnum.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyFloat.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyHash.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyModule.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyNil.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyObject.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyRegexp.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyString.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyStruct.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubySymbol.cs" />
+    <Compile Include="RubyMarshal\NativeModelTransformHelper.cs" />
+    <Compile Include="RubyMarshal\OriginModel\RubyUserDefinedObject.cs" />
+    <Compile Include="RubyMarshal\RubyMarshal.cs" />
+    <Compile Include="RubyMarshal\RubyMarshalReader.cs" />
+    <Compile Include="RubyMarshal\RubyMarshalWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Content Include="RubyMarshal\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Matlab\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IamI.Lib.Basic\IamI.Lib.Basic.csproj">
+      <Project>{748be146-6ff4-4ca7-b2b2-a5051a4744be}</Project>
+      <Name>IamI.Lib.Basic</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -10,14 +10,8 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
         /// </summary>
         public double Value { get; set; } = 0;
 
-        public override double Resolve(params double[] parameters)
-        {
-            return Value;
-        }
+        public override double Resolve(params double[] parameters) { return Value; }
 
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
+        public override string ToString() { return Value.ToString(); }
     }
 }

@@ -1,19 +1,30 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 
 namespace IamI.Lib.Others._1024
 {
     public class Behave
     {
-        public Movement TargetMovement { get; set; }
-        public Core TargetCore { get; set; }
+        public Movement TargetMovement { get; protected set; }
+        public Core TargetCore { get; protected set; }
 
-        public Behave(Movement target_movement = null, Core target_core = null)
+        public Behave(Movement target_movement, Core target_core)
         {
-            TargetMovement = target_movement ?? Game.Instance.Move;
-            TargetCore = target_core ?? Game.Instance.Core;
+            TargetMovement = target_movement;
+            TargetCore = target_core;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x_move"></param>
+        /// <param name="y_move"></param>
+        /// <param name="x_start"></param>
+        /// <param name="y_start"></param>
+        /// <param name="step_x_move"></param>
+        /// <param name="step_y_move"></param>
+        /// <returns></returns>
         protected Core Move(int x_move, int y_move, int x_start, int y_start, int step_x_move, int step_y_move)
         {
             // 初始化

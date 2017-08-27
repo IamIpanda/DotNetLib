@@ -4,6 +4,9 @@ using System.Text;
 
 namespace IamI.Lib.Others._1024
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Movement
     {
         public List<List<Action>> Actions = new List<List<Action>>();

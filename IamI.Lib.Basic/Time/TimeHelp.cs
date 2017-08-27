@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace IamI.Lib.Basic.Time
 {
+    /// <summary>
+    /// 协助对 Timespan 进行操作的 Help 类。
+    /// </summary>
     public static class TimeHelp
     {
         /// <summary>
@@ -21,19 +24,19 @@ namespace IamI.Lib.Basic.Time
         /// <returns>转换后的 Timespan</returns>
         public static TimeSpan ToTimespan(this string timespan_string)
         {
-            var num = 0;
+            var num = 0d;
             timespan_string = timespan_string.Trim().ToLower();
-            var second_name = second_names.Find((s) => timespan_string.EndsWith(s));
+            var second_name = second_names.Find(s => timespan_string.EndsWith(s));
             if (second_name != null) timespan_string = timespan_string.Substring(0, timespan_string.Length - second_name.Length);
             timespan_string = timespan_string.Trim();
-            var minute_name = minute_names.Find((m) => timespan_string.Contains(m));
+            var minute_name = minute_names.Find(m => timespan_string.Contains(m));
             if (minute_name != null)
             {
                 var components = timespan_string.Split(new [] { minute_name }, StringSplitOptions.None);
-                num = Convert.ToInt32(components[0]) * 60 + (components.Length >= 2 ? (int.TryParse(components[1], out int i) ? i : 0) : 0);
+                num = Convert.ToDouble(components[0]) * 60 + (components.Length >= 2 ? (double.TryParse(components[1], out double i) ? i : 0) : 0);
             }
             else
-                num = int.TryParse(timespan_string, out int j) ? j : 0;
+                num = double.TryParse(timespan_string, out double j) ? j : 0;
             return TimeSpan.FromSeconds(num);
         }
 
@@ -74,7 +77,7 @@ namespace IamI.Lib.Basic.Time
         /// 第 6 位：秒钟的个位
         /// 第 7 位：毫秒计数
         /// </summary>
-        /// <param name="span"></param>
+        /// <param name="span">要操作的 Timespan。</param>
         /// <param name="bit">要获得的位数</param>
         /// <returns>所请求的位</returns>
         public static int GetBit(this TimeSpan span, int bit)
@@ -96,7 +99,7 @@ namespace IamI.Lib.Basic.Time
         /// <summary>
         /// 设置 Timespan 的某一位。
         /// </summary>
-        /// <param name="span"></param>
+        /// <param name="span">要操作的 Timespan。</param>
         /// <param name="bit">要设置的位</param>
         /// <param name="value">要设置的值</param>
         /// <returns>设置后的 Timespan</returns>
@@ -104,12 +107,12 @@ namespace IamI.Lib.Basic.Time
         {
             return span + BasicTimes[bit].Times(value - span.GetBit(bit));
         }
-        
+
         /// <summary>
         /// 调整 Timespan 的某一位。
         /// 在原有的值上进行加和减。
         /// </summary>
-        /// <param name="span"></param>
+        /// <param name="span">要操作的 Timespan。</param>
         /// <param name="bit">要调整的位</param>
         /// <param name="value">要加减的值</param>
         /// <returns>设置后的 Timespan</returns>
