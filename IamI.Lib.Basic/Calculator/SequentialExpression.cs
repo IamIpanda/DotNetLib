@@ -31,18 +31,18 @@ namespace IamI.Lib.Basic.Calculator
         public static SequentialExpression FromString(string expression)
         {
             expression = expression.Replace(" ", "");
-            var charArray = expression.ToCharArray();
+            var char_array = expression.ToCharArray();
             var nodes = new List<CalculatorNode.CalculatorNode>();
-            for (var index = 0; index < charArray.Length;)
+            for (var index = 0; index < char_array.Length;)
             {
-                var _char = charArray[index];
+                var _char = char_array[index];
                 if (_char >= '0' && _char <= '9')
                 {
                     double value = _char - '0';
                     double decimal_point = 2;
-                    while (++index < charArray.Length)
+                    while (++index < char_array.Length)
                     {
-                        _char = charArray[index];
+                        _char = char_array[index];
                         if (_char >= '0' && _char <= '9')
                             if (decimal_point > 1) value = value * 10 + _char - '0';
                             else value = value + (decimal_point /= 10);
@@ -59,9 +59,9 @@ namespace IamI.Lib.Basic.Calculator
                 else if (IsValidVariableNameChar(_char))
                 {
                     var builder = new StringBuilder(_char.ToString());
-                    while (++index < charArray.Length)
+                    while (++index < char_array.Length)
                     {
-                        _char = charArray[index];
+                        _char = char_array[index];
                         if (IsValidVariableNameChar(_char)) builder.Append(_char);
                         else break;
                     }

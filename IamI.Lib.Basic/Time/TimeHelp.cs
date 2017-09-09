@@ -11,25 +11,25 @@ namespace IamI.Lib.Basic.Time
         /// <summary>
         /// 分钟的字符后缀
         /// </summary>
-        public static readonly List<string> minute_names = new List<string> { "m", "min", "mins", "minute", "minutes", "分", "分钟" };
+        public static readonly List<string> MinuteNames = new List<string> { "m", "min", "mins", "minute", "minutes", "分", "分钟" };
         /// <summary>
         /// 秒钟的字符后缀
         /// </summary>
-        public static readonly List<string> second_names = new List<string> { "s", "sec", "secs", "second", "seconds", "秒", "秒钟" };
+        public static readonly List<string> SecondNames = new List<string> { "s", "sec", "secs", "second", "seconds", "秒", "秒钟" };
 
         /// <summary>
         /// 把包含后缀在内的字符串转换为 Timespan。
         /// </summary>
-        /// <param name="timespan_string">要转换的字符串</param>
+        /// <param name="timespan_string">要 转换的字符串</param>
         /// <returns>转换后的 Timespan</returns>
         public static TimeSpan ToTimespan(this string timespan_string)
         {
             var num = 0d;
             timespan_string = timespan_string.Trim().ToLower();
-            var second_name = second_names.Find(s => timespan_string.EndsWith(s));
+            var second_name = SecondNames.Find(s => timespan_string.EndsWith(s));
             if (second_name != null) timespan_string = timespan_string.Substring(0, timespan_string.Length - second_name.Length);
             timespan_string = timespan_string.Trim();
-            var minute_name = minute_names.Find(m => timespan_string.Contains(m));
+            var minute_name = MinuteNames.Find(m => timespan_string.Contains(m));
             if (minute_name != null)
             {
                 var components = timespan_string.Split(new [] { minute_name }, StringSplitOptions.None);
@@ -43,7 +43,7 @@ namespace IamI.Lib.Basic.Time
         /// <summary>
         /// 基准时间阵列
         /// </summary>
-        private static readonly List<TimeSpan> BasicTimes = new List<TimeSpan>
+        private static readonly List<TimeSpan> basic_times = new List<TimeSpan>
         {
             new TimeSpan(1, 0, 0, 0),
             new TimeSpan(0, 10, 0, 0),
@@ -105,7 +105,7 @@ namespace IamI.Lib.Basic.Time
         /// <returns>设置后的 Timespan</returns>
         public static TimeSpan SetBit(this TimeSpan span, int bit, int value)
         {
-            return span + BasicTimes[bit].Times(value - span.GetBit(bit));
+            return span + basic_times[bit].Times(value - span.GetBit(bit));
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace IamI.Lib.Basic.Time
         /// <returns>设置后的 Timespan</returns>
         public static TimeSpan AdjustBit(this TimeSpan span, int bit, int value)
         {
-            var time = span + BasicTimes[bit].Times(value);
+            var time = span + basic_times[bit].Times(value);
             return time.TotalSeconds < 0 ? TimeSpan.Zero : time;
         }
 

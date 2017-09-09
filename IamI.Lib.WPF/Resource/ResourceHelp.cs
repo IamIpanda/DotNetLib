@@ -25,8 +25,8 @@ namespace IamI.Lib.WPF.Resource
             }
             catch (Exception ex)
             {
-                Basic.Log.Logger.Default.Error($"Can't find resource {str}");
-                Basic.Log.Logger.Default.Error(ex.ToString());
+                Logger.Default.Error($"Can't find resource {str}");
+                Logger.Default.Error(ex.ToString());
                 return default(T);
             }
         }
@@ -41,22 +41,22 @@ namespace IamI.Lib.WPF.Resource
         {
             if (dict == null)
             {
-                Basic.Log.Logger.Default.Warning("Setting resource is null");
+                Logger.Default.Warning("Setting resource is null");
                 return;
             }
             var merged_resource_dicrionaries = application.Resources.MergedDictionaries;
             if (position > merged_resource_dicrionaries.Count - 1)
-                Basic.Log.Logger.Default.Warning(
+                Logger.Default.Warning(
                     $"Trying to set {position}-th resource to another resource dict, but merged dict only contains {merged_resource_dicrionaries.Count} dicts. Nothing is done.");
             else if (position == merged_resource_dicrionaries.Count)
             {
                 merged_resource_dicrionaries.Add(dict);
-                Basic.Log.Logger.Default.Info(
+                Logger.Default.Info(
                     $"Added a resource dictionary to the application. Now it contains {merged_resource_dicrionaries.Count} resource dicts.");
             }
             else
             {
-                Basic.Log.Logger.Default.Info($"Setting the resource on {position} to another resource dict");
+                Logger.Default.Info($"Setting the resource on {position} to another resource dict");
                 merged_resource_dicrionaries[position] = dict;
             }
         }
@@ -64,9 +64,7 @@ namespace IamI.Lib.WPF.Resource
         /// <summary>
         /// 应用程序与其文字索引的资源字典之间的对应关系
         /// </summary>
-        public static Dictionary<Application, Dictionary<string, ResourceDictionary>>
-            ApplicationResourceDictionaryIndecies =
-                new Dictionary<Application, Dictionary<string, ResourceDictionary>>();
+        public static Dictionary<Application, Dictionary<string, ResourceDictionary>> application_resource_dictionary_indecies = new Dictionary<Application, Dictionary<string, ResourceDictionary>>();
 
         /// <summary>
         /// 检索应用程序对应的资源字典的文字索引。
@@ -75,11 +73,11 @@ namespace IamI.Lib.WPF.Resource
         /// <returns>应用程序的资源字典的文字索引。</returns>
         public static Dictionary<string, ResourceDictionary> GetResourceIndexDictionary(this Application application)
         {
-            if (ApplicationResourceDictionaryIndecies.TryGetValue(application,
+            if (application_resource_dictionary_indecies.TryGetValue(application,
                 out Dictionary<string, ResourceDictionary> answer)) return answer;
-            Basic.Log.Logger.Default.Debug($"Builded indecies for an application.");
+            Logger.Default.Debug($"Builded indecies for an application.");
             answer = new Dictionary<string, ResourceDictionary>();
-            ApplicationResourceDictionaryIndecies.Add(application, answer);
+            application_resource_dictionary_indecies.Add(application, answer);
             return answer;
         }
 
@@ -95,10 +93,10 @@ namespace IamI.Lib.WPF.Resource
             var merged_resouce_dictionaries = application.Resources.MergedDictionaries;
             var names_list = names.ToList();
             if (merged_resouce_dictionaries.Count != names_list.Count)
-                Basic.Log.Logger.Default.Warning($"Trying to index a {merged_resouce_dictionaries.Count} dictionary with {names_list.Count} names.");
+                Logger.Default.Warning($"Trying to index a {merged_resouce_dictionaries.Count} dictionary with {names_list.Count} names.");
             for (var i = 0; i < names_list.Count && i < merged_resouce_dictionaries.Count; i++)
                 indecies.Add(names_list[i], merged_resouce_dictionaries[i]);
-            Basic.Log.Logger.Default.Info($"Set application indecies: [{string.Join(", ", names_list.ToArray())}]");
+            Logger.Default.Info($"Set application indecies: [{string.Join(", ", names_list.ToArray())}]");
         }
 
         /// <summary>
@@ -111,27 +109,27 @@ namespace IamI.Lib.WPF.Resource
         {
             if (dict == null)
             {
-                Basic.Log.Logger.Default.Warning("Setting resource is null");
+                Logger.Default.Warning("Setting resource is null");
                 return;
             }
             var indecies = application.GetResourceIndexDictionary();
             var merged_resouce_dictionaries = application.Resources.MergedDictionaries;
             if (indecies.Count != merged_resouce_dictionaries.Count)
-                Basic.Log.Logger.Default.Warning("Given indecies doesn't equal the application merged dictionaries. Make sure you set the correct index!");
+                Logger.Default.Warning("Given indecies doesn't equal the application merged dictionaries. Make sure you set the correct index!");
             if (indecies.ContainsKey(key))
             {
-                Basic.Log.Logger.Default.Info($"Added dict {key} to the application resources.");
+                Logger.Default.Info($"Added dict {key} to the application resources.");
                 indecies.Add(key, dict);
                 merged_resouce_dictionaries.Add(dict);
             }
             else
             {
-                Basic.Log.Logger.Default.Info($"Setting the resource {key} to another dictionary.");
+                Logger.Default.Info($"Setting the resource {key} to another dictionary.");
                 indecies[key] = dict;
                 var position = merged_resouce_dictionaries.IndexOf(indecies[key]);
                 if (position < 0)
                 {
-                    Basic.Log.Logger.Default.Warning($"Doesn't find resource dictionary named {key} in merged dictionary.");
+                    Logger.Default.Warning($"Doesn't find resource dictionary named {key} in merged dictionary.");
                     merged_resouce_dictionaries.Add(dict);
                 }
                 else

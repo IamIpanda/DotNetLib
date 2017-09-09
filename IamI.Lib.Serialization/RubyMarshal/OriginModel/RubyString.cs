@@ -43,14 +43,14 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         protected byte[] raw;
         protected Encoding encoding;
         protected string str;
-        protected bool setByText;
-        protected bool setByRaw;
+        protected bool set_by_text;
+        protected bool set_by_raw;
 
-        public RubyString(string unicodeText)
+        public RubyString(string unicode_text)
         {
             encoding = Encoding.Unicode;
-            str = unicodeText;
-            setByText = true;
+            str = unicode_text;
+            set_by_text = true;
             ClassName = RubySymbol.GetSymbol("String");
             Encoding = Encoding.UTF8;
         }
@@ -59,7 +59,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             this.raw = raw;
             encoding = Encoding.Default;
-            setByRaw = true;
+            set_by_raw = true;
             ClassName = RubySymbol.GetSymbol("String");
         }
 
@@ -67,7 +67,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             this.raw = raw;
             this.encoding = encoding;
-            setByRaw = true;
+            set_by_raw = true;
             ClassName = RubySymbol.GetSymbol("String");
         }
 
@@ -90,18 +90,17 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             get
             {
-                if (setByRaw) return raw;
-                if (encoding == null) throw new NotSupportedException();
-                setByText = false;
-                setByRaw = true;
-                raw = encoding.GetBytes(str);
+                if (set_by_raw) return raw;
+                set_by_text = false;
+                set_by_raw = true;
+                raw = encoding?.GetBytes(str) ?? throw new NotSupportedException();
                 return raw;
             }
             set
             {
                 raw = value;
-                setByText = false;
-                setByRaw = true;
+                set_by_text = false;
+                set_by_raw = true;
             }
         }
 
@@ -109,10 +108,10 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             get
             {
-                if (setByText) return str;
-                if (encoding == Encoding.Default) return Encoding.Default.GetString(raw);
-                setByRaw = false;
-                setByText = true;
+                if (set_by_text) return str;
+                if (Equals(encoding, Encoding.Default)) return Encoding.Default.GetString(raw);
+                set_by_raw = false;
+                set_by_text = true;
                 Text = encoding.GetString(raw);
                 return str;
             }
@@ -120,8 +119,8 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             {
                 str = value;
                 if (encoding == null) encoding = Encoding.Unicode;
-                setByText = true;
-                setByRaw = false;
+                set_by_text = true;
+                set_by_raw = false;
             }
         }
 
@@ -131,7 +130,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         public override string ToString() { return Text; }
 
-        public override object Clone() { return setByRaw ? new RubyString(raw, encoding) : new RubyString(str); }
+        public override object Clone() { return set_by_raw ? new RubyString(raw, encoding) : new RubyString(str); }
 
         public static explicit operator string(RubyString self) { return self.Text; }
     }

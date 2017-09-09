@@ -222,7 +222,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                 return;
             }
 
-            WriteSymbol(RubyMarshal.IDs.encoding);
+            WriteSymbol(RubyMarshal.IDs.Encoding);
             WriteObject(RubySymbol.GetSymbol(encidx.BodyName));
         }
 
@@ -233,14 +233,14 @@ namespace IamI.Lib.Serialization.RubyMarshal
         public void WriteInstanceVariable(RubyObject obj, Dictionary<RubySymbol, object> tbl)
         {
             var num = tbl?.Count ?? 0;
-            if (tbl != null && tbl.ContainsKey(RubyMarshal.IDs.encoding) && num > 0) num -= 1;
+            if (tbl != null && tbl.ContainsKey(RubyMarshal.IDs.Encoding) && num > 0) num -= 1;
             if (tbl != null && tbl.ContainsKey(RubyMarshal.IDs.E) && num > 0) num -= 1;
 
             WriteEncoding(obj, num);
             if (tbl == null) return;
             foreach (var item in tbl)
             {
-                if (item.Key == RubyMarshal.IDs.encoding) continue;
+                if (item.Key == RubyMarshal.IDs.Encoding) continue;
                 if (item.Key == RubyMarshal.IDs.E) continue;
                 WriteSymbol(item.Key);
                 WriteObject(item.Value);

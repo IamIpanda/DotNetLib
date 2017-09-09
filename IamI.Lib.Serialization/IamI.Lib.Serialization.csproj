@@ -69,9 +69,6 @@
     <Content Include="RubyMarshal\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Matlab\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\IamI.Lib.Basic\IamI.Lib.Basic.csproj">
       <Project>{748be146-6ff4-4ca7-b2b2-a5051a4744be}</Project>
       <Name>IamI.Lib.Basic</Name>

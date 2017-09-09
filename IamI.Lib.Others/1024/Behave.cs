@@ -16,10 +16,10 @@ namespace IamI.Lib.Others._1024
         }
 
         /// <summary>
-        /// 
+        /// 响应移动请求。
         /// </summary>
-        /// <param name="x_move"></param>
-        /// <param name="y_move"></param>
+        /// <param name="x_move">指示在x轴上向哪个方向移动。</param>
+        /// <param name="y_move">指示在y轴上向哪个方向移动。</param>
         /// <param name="x_start"></param>
         /// <param name="y_start"></param>
         /// <param name="step_x_move"></param>
@@ -90,40 +90,66 @@ namespace IamI.Lib.Others._1024
             return answer.AddFrom(record);
         }
 
+        /// <summary>
+        /// 响应向左移动。
+        /// </summary>
+        /// <returns>一个 Core 对象，指示移动结束后的结果。</returns>
         public Core MoveLeft()
         {
             return Move(-1, 0, 1, 0, 0, 1);
         }
 
+        /// <summary>
+        /// 响应向右移动。
+        /// </summary>
+        /// <returns>一个 Core 对象，指示移动结束后的结果。</returns>
         public Core MoveRight()
         {
             return Move(1, 0, -2, 0, 0, 1);
         }
 
+        /// <summary>
+        /// 响应向上移动。
+        /// </summary>
+        /// <returns>一个 Core 对象，指示移动结束后的结果。</returns>
         public Core MoveUp()
         {
             return Move(0, -1, 0, 1, 1, 0);
         }
 
+        /// <summary>
+        /// 响应向下移动。
+        /// </summary>
+        /// <returns>一个 Core 对象，指示移动结束后的结果。</returns>
         public Core MoveDown()
         {
             return Move(0, 1, 0, -2, 1, 0);
         }
         
-        private readonly Random _random = new Random();
+        private readonly Random random = new Random();
+        
+        /// <summary>
+        /// 为目标区域内生成新块。
+        /// </summary>
+        /// <param name="type">一个整形数组，指示可以生成哪些数字的块。</param>
+        /// <param name="area">指示可以生成的目标区域</param>
+        /// <param name="moment">指示何时产生新块。</param>
         public void Generate(List<long> type, Rectangle area, int moment = 1)
         {
-            var target = type[_random.Next(0, type.Count)];
-            var p = new List<Point>();
+            var target = type[random.Next(0, type.Count)];
+            var points = new List<Point>();
             for(var i = area.Left; i <= area.Right; i++)
                 for (var j = area.Top; j <= area.Bottom; j++)
                     if (TargetCore[i, j] == Core.None)
-                        p.Add(new Point(i, j));
-            if (p.Count == 0) return;
-            var point = p[_random.Next(0, p.Count)];
+                        points.Add(new Point(i, j));
+            if (points.Count == 0) return;
+            var point = points[random.Next(0, points.Count)];
             TargetMovement.Appear(point.X, point.Y, target, moment);
         }
 
+        /// <summary>
+        /// 强制清空全区。
+        /// </summary>
         public void Clear()
         {
             for(var i = 0; i < TargetCore.Width; i++)
@@ -131,6 +157,10 @@ namespace IamI.Lib.Others._1024
                     TargetCore[i, j] = 0;
         }
 
+        /// <summary>
+        /// 动画清空全区
+        /// </summary>
+        /// <param name="moment">指示何时生效。</param>
         public void Clear(int moment)
         {
             for (var i = 0; i < TargetCore.Width; i++)
@@ -139,13 +169,18 @@ namespace IamI.Lib.Others._1024
                         TargetMovement.Disappear(i, j, moment);
         }
 
+        /// <summary>
+        /// 初始化游戏。
+        /// </summary>
+        /// <param name="inits">指示在哪些区域生成哪些数字块。</param>
+        /// <param name="moment">指示何时生效。</param>
         public void NewGame(Dictionary<List<long>, Rectangle> inits, int moment = 0)
         {
             foreach (var pair in inits)
             {
-                var i = _random.Next(pair.Value.Left, pair.Value.Right);
-                var j = _random.Next(pair.Value.Top, pair.Value.Bottom);
-                var value = pair.Key[_random.Next(0, pair.Key.Count)];
+                var i = random.Next(pair.Value.Left, pair.Value.Right);
+                var j = random.Next(pair.Value.Top, pair.Value.Bottom);
+                var value = pair.Key[random.Next(0, pair.Key.Count)];
                 TargetMovement.Appear(i, j, value, moment);
             }
         }

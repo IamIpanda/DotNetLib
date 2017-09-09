@@ -147,7 +147,6 @@ namespace IamI.Lib.Basic.Calculator.CalculatorNode
         /// 获取节点所对应的优先级。
         /// 此为对 OperatorCalculator.OperatorRank 的转发。
         /// </summary>
-        /// <remarks>
         /// <param name="node">要获得优先级的节点</param>
         /// <returns>节点所对应的优先级</returns>
         public static int Rank(this CalculatorNode node) { return OperatorCalculatorNode.OperatorRank(node); }

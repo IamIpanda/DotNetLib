@@ -21,7 +21,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
             /// <summary>
             /// 用以表示编码的固定 Magic Symbol。
             /// </summary>
-            public static RubySymbol encoding = RubySymbol.GetSymbol("encoding");
+            public static RubySymbol Encoding = RubySymbol.GetSymbol("encoding");
 
             /// <summary>
             /// 用以表示 StringStyleType::Style19 的固定 Magic Symbol。

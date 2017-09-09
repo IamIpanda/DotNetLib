@@ -135,7 +135,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         /// <returns></returns>
         public Encoding GetEncoding(RubySymbol id, object val)
         {
-            if (id == RubyMarshal.IDs.encoding) return Encoding.GetEncoding(((RubyString) val).Text);
+            if (id == RubyMarshal.IDs.Encoding) return Encoding.GetEncoding(((RubyString) val).Text);
             else if (id == RubyMarshal.IDs.E)
             {
                 if ((val is bool) && ((bool) val == false)) return Encoding.Default;

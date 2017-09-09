@@ -131,11 +131,16 @@ namespace IamI.Lib.Others._1024
         public void Execute(Movement movement)
         {
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
-            foreach (var actions in movement.Actions)
+            foreach (var actions in movement.actions)
                 foreach (var action in actions)
                     Execute(action);
         }
 
+        /// <summary>
+        /// 在此 Core 上执行给定的 Core。
+        /// </summary>
+        /// <param name="source">要执行的 Core。</param>
+        /// <returns>处理后的此 Core 自身。</returns>
         public Core AddFrom(Core source)
         { 
             for (var i = 0; i < Width; i++)
@@ -144,7 +149,6 @@ namespace IamI.Lib.Others._1024
                         this[i, j] = None;
                     else if (source[i, j] != None)
                         this[i, j] = source[i, j];
-            
             return this;
         }
 
