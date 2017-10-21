@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Media.Animation;
 
 namespace IamI.Lib.WPF.Resource
@@ -9,28 +8,28 @@ namespace IamI.Lib.WPF.Resource
     public static class AnimationHelp
     {
         /// <summary>
-        /// 获取或设置动画资源的前缀。
+        ///     获取或设置动画资源的前缀。
         /// </summary>
         public static string AnimationResourcePrefix { get; set; } = "animation-";
 
         /// <summary>
-        /// 获取或设置故事板资源的前缀。
+        ///     获取或设置故事板资源的前缀。
         /// </summary>
         public static string StoryboardResourcePrefix { get; set; } = "storyboard-";
 
         /// <summary>
-        /// 获取或设置执行动画成功时，返回的值。
+        ///     获取或设置执行动画成功时，返回的值。
         /// </summary>
         public static int ExecuteAnimationSuccessed { get; set; } = 0;
 
         /// <summary>
-        /// 获取或设置执行动画失败时，返回的值。
+        ///     获取或设置执行动画失败时，返回的值。
         /// </summary>
         public static int ExecuteUnexistAnimation { get; set; } = -1;
 
         /// <summary>
-        /// 搜索指定名称，指定类型的动画资源。
-        /// 搜索时包含动画前缀。
+        ///     搜索指定名称，指定类型的动画资源。
+        ///     搜索时包含动画前缀。
         /// </summary>
         /// <typeparam name="T">指定的动画类型</typeparam>
         /// <param name="animation_name">动画的索引，会添加动画前缀。</param>
@@ -41,8 +40,8 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 搜索指定名称的动画资源。
-        /// 搜索时包含动画前缀。
+        ///     搜索指定名称的动画资源。
+        ///     搜索时包含动画前缀。
         /// </summary>
         /// <param name="animation_name">动画的索引，会添加动画前缀。</param>
         /// <returns>所搜索资源，或者 null</returns>
@@ -52,8 +51,8 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 搜索指定名称的故事板资源。
-        /// 搜索时包含故事板前缀。
+        ///     搜索指定名称的故事板资源。
+        ///     搜索时包含故事板前缀。
         /// </summary>
         /// <param name="storyboard_name">故事板的索引，会添加故事板前缀。</param>
         /// <returns>所搜索的资源，或者 null</returns>
@@ -63,7 +62,7 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 在此控件上，在指定属性上执行指定名称的动画。
+        ///     在此控件上，在指定属性上执行指定名称的动画。
         /// </summary>
         /// <param name="control"></param>
         /// <param name="property">要动画的属性</param>
@@ -83,7 +82,7 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 在此控件上，执行指定名称的故事板。
+        ///     在此控件上，执行指定名称的故事板。
         /// </summary>
         /// <param name="control"></param>
         /// <param name="storyboard_name">故事板的索引，会添加故事板前缀。</param>
@@ -102,7 +101,7 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 在此控件上，按照指定的名称顺序，执行第一个存在的故事板。
+        ///     在此控件上，按照指定的名称顺序，执行第一个存在的故事板。
         /// </summary>
         /// <param name="control"></param>
         /// <param name="storyboard_names">故事版的索引数组，会添加故事板前缀。</param>
@@ -118,7 +117,7 @@ namespace IamI.Lib.WPF.Resource
         }
 
         /// <summary>
-        /// 交换两个控件的存在性。
+        ///     交换两个控件的存在性。
         /// </summary>
         /// <param name="control_to_hide">要隐藏的控件。</param>
         /// <param name="control_to_appear">要显示的控件。</param>

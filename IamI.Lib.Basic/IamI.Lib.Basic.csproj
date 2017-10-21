@@ -53,8 +53,5 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Time\TimeHelp.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Calculator\[A]OldCalculatorRefrence.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

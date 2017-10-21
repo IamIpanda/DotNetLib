@@ -40,18 +40,18 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         internal class RubyHashDebugView
         {
-            private readonly RubyHash hashtable;
-            public RubyHashDebugView(RubyHash hashtable) { this.hashtable = hashtable; }
+            private readonly RubyHash _hashtable;
+            public RubyHashDebugView(RubyHash hashtable) { this._hashtable = hashtable; }
 
             [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.RootHidden)]
             public KeyValuePair<object, object>[] Keys
             {
                 get
                 {
-                    var keys = new KeyValuePair<object, object>[hashtable.Count];
+                    var keys = new KeyValuePair<object, object>[_hashtable.Count];
 
                     var i = 0;
-                    foreach (var key in hashtable)
+                    foreach (var key in _hashtable)
                     {
                         keys[i] = key;
                         i++;
@@ -64,7 +64,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         public override object Clone()
         {
             var clone_target = new RubyHash(DefaultValue);
-            foreach (var Key in clone_target.Keys) clone_target.Add(Dup(Key), Dup(clone_target[Key]));
+            foreach (var key in clone_target.Keys) clone_target.Add(Dup(key), Dup(clone_target[key]));
             return clone_target;
         }
     }

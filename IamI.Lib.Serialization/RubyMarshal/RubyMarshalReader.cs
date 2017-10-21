@@ -8,37 +8,39 @@ namespace IamI.Lib.Serialization.RubyMarshal
 {
     public class RubyMarshalReader
     {
-        private readonly Stream m_stream;
-        private readonly BinaryReader m_reader;
-        private readonly Dictionary<int, object> m_objects = new Dictionary<int, object>();
-        private readonly Dictionary<int, RubySymbol> m_symbols = new Dictionary<int, RubySymbol>();
-        private readonly Dictionary<object, object> m_compat_tbl = new Dictionary<object, object>();
-        private readonly Converter<object, object> m_proc = null;
+        private readonly Dictionary<object, object> _m_compat_tbl = new Dictionary<object, object>();
+        private readonly Dictionary<int, object> _m_objects = new Dictionary<int, object>();
+        private readonly Converter<object, object> _m_proc = null;
+        private readonly BinaryReader _m_reader;
+        private readonly Stream _m_stream;
+        private readonly Dictionary<int, RubySymbol> _m_symbols = new Dictionary<int, RubySymbol>();
 
         public RubyMarshalReader(Stream input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (!input.CanRead) throw new ArgumentException("instance of IO needed");
-            m_stream = input;
-            m_reader = new BinaryReader(m_stream, Encoding.ASCII);
+            _m_stream = input;
+            _m_reader = new BinaryReader(_m_stream, Encoding.ASCII);
         }
 
         public object Load()
         {
             var major = ReadByte();
             var minor = ReadByte();
-            if (major != RubyMarshal.MarshalMajor || minor > RubyMarshal.MarshalMinor) throw new InvalidDataException($"incompatible marshal file format (can't be read)\n\tformat version {RubyMarshal.MarshalMajor}.{RubyMarshal.MarshalMinor} required; {major}.{minor} given");
+            if (major != RubyMarshal.MARSHAL_MAJOR || minor > RubyMarshal.MARSHAL_MINOR)
+                throw new InvalidDataException(
+                    $"incompatible marshal file format (can't be read)\n\tformat version {RubyMarshal.MARSHAL_MAJOR}.{RubyMarshal.MARSHAL_MINOR} required; {major}.{minor} given");
 
             return ReadObject();
         }
 
         /// <summary>
-        /// static int r_byte(struct load_arg *arg)
+        ///     static int r_byte(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public int ReadByte()
         {
-            return m_stream.ReadByte();
+            return _m_stream.ReadByte();
         }
 
         public static int ReadLong(BinaryReader reader)
@@ -49,7 +51,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
             {
                 var output = 0;
                 for (var i = 0; i < -num; i++) output += (0xff - reader.ReadByte()) << (8 * i);
-                return (-output - 1);
+                return -output - 1;
             }
             if (num == 0) return 0;
             if (num <= 4)
@@ -62,26 +64,26 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static long r_long(struct load_arg *arg)
+        ///     static long r_long(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public int ReadLong()
         {
-            return ReadLong(m_reader);
+            return ReadLong(_m_reader);
         }
 
         /// <summary>
-        /// static VALUE r_bytes0(long len, struct load_arg *arg)
+        ///     static VALUE r_bytes0(long len, struct load_arg *arg)
         /// </summary>
         /// <param name="len"></param>
         /// <returns></returns>
         public byte[] ReadBytes0(int len)
         {
-            return m_reader.ReadBytes(len);
+            return _m_reader.ReadBytes(len);
         }
 
         /// <summary>
-        /// #define r_bytes(arg) r_bytes0(r_long(arg), (arg))
+        ///     #define r_bytes(arg) r_bytes0(r_long(arg), (arg))
         /// </summary>
         /// <returns></returns>
         public byte[] ReadBytes()
@@ -90,28 +92,28 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static ID r_symlink(struct load_arg *arg)
+        ///     static ID r_symlink(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public RubySymbol ReadSymbolLink()
         {
             var num = ReadLong();
-            if (num >= m_symbols.Count) throw new InvalidDataException("bad symbol");
-            return m_symbols[num];
+            if (num >= _m_symbols.Count) throw new InvalidDataException("bad symbol");
+            return _m_symbols[num];
         }
 
         /// <summary>
-        /// static ID r_symreal(struct load_arg *arg, int ivar)
+        ///     static ID r_symreal(struct load_arg *arg, int ivar)
         /// </summary>
         /// <param name="ivar"></param>
         /// <returns></returns>
         public RubySymbol ReadSymbolReal(bool ivar)
         {
             var s = ReadBytes();
-            var n = m_symbols.Count;
+            var n = _m_symbols.Count;
             RubySymbol id;
             var idx = Encoding.UTF8;
-            m_symbols.Add(n, null);
+            _m_symbols.Add(n, null);
             if (ivar)
             {
                 var num = ReadLong();
@@ -123,29 +125,30 @@ namespace IamI.Lib.Serialization.RubyMarshal
             }
             var str = new RubyString(s, idx);
             id = RubySymbol.GetSymbol(str);
-            m_symbols[n] = id;
+            _m_symbols[n] = id;
             return id;
         }
 
         /// <summary>
-        /// static int id2encidx(ID id, VALUE val)
+        ///     static int id2encidx(ID id, VALUE val)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="val"></param>
         /// <returns></returns>
         public Encoding GetEncoding(RubySymbol id, object val)
         {
-            if (id == RubyMarshal.IDs.Encoding) return Encoding.GetEncoding(((RubyString) val).Text);
-            else if (id == RubyMarshal.IDs.E)
+            if (id == RubyMarshal.Ds.encoding)
+                return Encoding.GetEncoding(((RubyString) val).Text);
+            if (id == RubyMarshal.Ds.e)
             {
-                if ((val is bool) && ((bool) val == false)) return Encoding.Default;
-                if ((val is bool) && ((bool) val == true)) return Encoding.UTF8;
+                if (val is bool && (bool) val == false) return Encoding.Default;
+                if (val is bool && (bool) val) return Encoding.UTF8;
             }
             return null;
         }
 
         /// <summary>
-        /// static ID r_symbol(struct load_arg *arg)
+        ///     static ID r_symbol(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public RubySymbol ReadSymbol()
@@ -155,12 +158,12 @@ namespace IamI.Lib.Serialization.RubyMarshal
             again:
             switch (type = ReadByte())
             {
-                case RubyMarshal.Types.InstanceVariable:
+                case RubyMarshal.Types.INSTANCE_VARIABLE:
                     ivar = true;
                     goto again;
-                case RubyMarshal.Types.Symbol:
+                case RubyMarshal.Types.SYMBOL:
                     return ReadSymbolReal(ivar);
-                case RubyMarshal.Types.SymbolLink:
+                case RubyMarshal.Types.SYMBOL_LINK:
                     if (ivar) throw new InvalidDataException("dump format error (symlink with encoding)");
                     return ReadSymbolLink();
                 default:
@@ -169,7 +172,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static VALUE r_unique(struct load_arg *arg)
+        ///     static VALUE r_unique(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public RubySymbol ReadUnique()
@@ -178,35 +181,32 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static VALUE r_string(struct load_arg *arg)
+        ///     static VALUE r_string(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public RubyString ReadString()
         {
             var raw = ReadBytes();
             var v = new RubyString(raw);
-            if ((raw.Length > 2) && (raw[0] == 120) && (raw[1] == 156))
-            {
+            if (raw.Length > 2 && raw[0] == 120 && raw[1] == 156)
                 v.Encoding = Encoding.Default;
-                // special treatment for zlib
-            }
             else v.Encoding = Encoding.UTF8;
             return v;
         }
 
         /// <summary>
-        /// static st_index_t r_prepare(struct load_arg *arg)
+        ///     static st_index_t r_prepare(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public int Prepare()
         {
-            var idx = m_objects.Count;
-            m_objects.Add(idx, null);
+            var idx = _m_objects.Count;
+            _m_objects.Add(idx, null);
             return idx;
         }
 
         /// <summary>
-        /// static VALUE r_entry0(VALUE v, st_index_t num, struct load_arg *arg)
+        ///     static VALUE r_entry0(VALUE v, st_index_t num, struct load_arg *arg)
         /// </summary>
         /// <param name="v"></param>
         /// <param name="num"></param>
@@ -214,37 +214,37 @@ namespace IamI.Lib.Serialization.RubyMarshal
         public object Entry0(object v, int num)
         {
             object real_obj = null;
-            if (m_compat_tbl.TryGetValue(v, out real_obj))
+            if (_m_compat_tbl.TryGetValue(v, out real_obj))
             {
-                if (m_objects.ContainsKey(num)) m_objects[num] = real_obj;
-                else m_objects.Add(num, real_obj);
+                if (_m_objects.ContainsKey(num)) _m_objects[num] = real_obj;
+                else _m_objects.Add(num, real_obj);
             }
             else
             {
-                if (m_objects.ContainsKey(num)) m_objects[num] = v;
-                else m_objects.Add(num, v);
+                if (_m_objects.ContainsKey(num)) _m_objects[num] = v;
+                else _m_objects.Add(num, v);
             }
             return v;
         }
 
         /// <summary>
-        /// #define r_entry(v, arg) r_entry0((v), (arg)->data->num_entries, (arg))
+        ///     #define r_entry(v, arg) r_entry0((v), (arg)->data->num_entries, (arg))
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
         public object Entry(object v)
         {
-            return Entry0(v, m_objects.Count);
+            return Entry0(v, _m_objects.Count);
         }
 
         /// <summary>
-        /// static VALUE r_leave(VALUE v, struct load_arg *arg)
+        ///     static VALUE r_leave(VALUE v, struct load_arg *arg)
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
         public object Leave(object v)
         {
-            if (m_compat_tbl.TryGetValue(v, out object data))
+            if (_m_compat_tbl.TryGetValue(v, out var data))
             {
                 var real_obj = data;
                 var key = v;
@@ -253,15 +253,15 @@ namespace IamI.Lib.Serialization.RubyMarshal
                 //   marshal_compat_t *compat = (marshal_compat_t*)data;
                 //   compat->loader(real_obj, v);
                 // }
-                m_compat_tbl.Remove(key);
+                _m_compat_tbl.Remove(key);
                 v = real_obj;
             }
-            if (m_proc != null) { v = m_proc(v); }
+            if (_m_proc != null) v = _m_proc(v);
             return v;
         }
 
         /// <summary>
-        /// static void r_ivar(VALUE obj, int *has_encoding, struct load_arg *arg)
+        ///     static void r_ivar(VALUE obj, int *has_encoding, struct load_arg *arg)
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="has_encoding"></param>
@@ -294,7 +294,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static VALUE append_extmod(VALUE obj, VALUE extmod)
+        ///     static VALUE append_extmod(VALUE obj, VALUE extmod)
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="extmod"></param>
@@ -306,7 +306,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static VALUE r_object(struct load_arg *arg)
+        ///     static VALUE r_object(struct load_arg *arg)
         /// </summary>
         /// <returns></returns>
         public object ReadObject()
@@ -315,7 +315,10 @@ namespace IamI.Lib.Serialization.RubyMarshal
             return ReadObject0(false, ref ivp, null);
         }
 
-        public object ReadObject0(ref bool ivp, List<RubyModule> extmod) { return ReadObject0(true, ref ivp, extmod); }
+        public object ReadObject0(ref bool ivp, List<RubyModule> extmod)
+        {
+            return ReadObject0(true, ref ivp, extmod);
+        }
 
         public object ReadObject0(List<RubyModule> extmod)
         {
@@ -324,7 +327,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         }
 
         /// <summary>
-        /// static VALUE r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
+        ///     static VALUE r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
         /// </summary>
         /// <param name="hasivp"></param>
         /// <param name="ivp"></param>
@@ -336,14 +339,15 @@ namespace IamI.Lib.Serialization.RubyMarshal
             var type = ReadByte();
             switch (type)
             {
-                case RubyMarshal.Types.Link:
+                case RubyMarshal.Types.LINK:
                     var id = ReadLong();
                     object link;
-                    if (!m_objects.TryGetValue(id, out link)) throw new InvalidDataException("dump format error (unlinked)");
+                    if (!_m_objects.TryGetValue(id, out link))
+                        throw new InvalidDataException("dump format error (unlinked)");
                     v = link;
-                    if (m_proc != null) v = m_proc(v);
+                    if (_m_proc != null) v = _m_proc(v);
                     break;
-                case RubyMarshal.Types.InstanceVariable:
+                case RubyMarshal.Types.INSTANCE_VARIABLE:
                 {
                     var ivar = true;
                     v = ReadObject0(ref ivar, extmod);
@@ -351,7 +355,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     if (ivar) ReadInstanceVariable(v, ref hasenc);
                 }
                     break;
-                case RubyMarshal.Types.Extended:
+                case RubyMarshal.Types.EXTENDED:
                 {
                     var m = RubyModule.GetModule(ReadUnique());
                     if (extmod == null) extmod = new List<RubyModule>();
@@ -360,31 +364,31 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     if (v is RubyObject fobj) fobj.ExtendModules.AddRange(extmod);
                 }
                     break;
-                case RubyMarshal.Types.UserClass:
+                case RubyMarshal.Types.USER_CLASS:
                 {
                     var c = RubyClass.GetClass(ReadUnique());
                     v = ReadObject0(extmod);
                     if (v is RubyObject) (v as RubyObject).ClassName = c.Symbol;
                 }
                     break;
-                case RubyMarshal.Types.Nil:
+                case RubyMarshal.Types.NIL:
                     v = RubyNil.Instance;
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.True:
+                case RubyMarshal.Types.TRUE:
                     v = RubyBool.True;
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.False:
+                case RubyMarshal.Types.FALSE:
                     v = RubyBool.False;
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.Fixnum:
+                case RubyMarshal.Types.FIXNUM:
                     v = ReadLong();
                     v = new RubyFixnum(Convert.ToInt64(v));
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.Float:
+                case RubyMarshal.Types.FLOAT:
                 {
                     double d;
                     var fstr = ReadString();
@@ -412,7 +416,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Bignum:
+                case RubyMarshal.Types.BIGNUM:
                 {
                     var sign = 0;
                     switch (ReadByte())
@@ -433,18 +437,18 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     var index = num3 / 2;
                     var num5 = (num3 + 1) / 2;
                     var data = new uint[num5];
-                    for (var i = 0; i < index; i++) { data[i] = m_reader.ReadUInt32(); }
-                    if (index != num5) { data[index] = m_reader.ReadUInt16(); }
+                    for (var i = 0; i < index; i++) data[i] = _m_reader.ReadUInt32();
+                    if (index != num5) data[index] = _m_reader.ReadUInt16();
                     v = new RubyBignum(sign, data);
                     v = Entry(v);
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.String:
+                case RubyMarshal.Types.STRING:
                     v = Entry(ReadString());
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.Regexp:
+                case RubyMarshal.Types.REGEXP:
                 {
                     var str = ReadString();
                     var options = ReadByte();
@@ -481,7 +485,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Array:
+                case RubyMarshal.Types.ARRAY:
                 {
                     var len = ReadLong();
                     var ary = new RubyArray();
@@ -491,8 +495,8 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Hash:
-                case RubyMarshal.Types.HashWithDefault:
+                case RubyMarshal.Types.HASH:
+                case RubyMarshal.Types.HASH_WITH_DEFAULT:
                 {
                     var len = ReadLong();
                     var hash = new RubyHash();
@@ -504,11 +508,11 @@ namespace IamI.Lib.Serialization.RubyMarshal
                         var value = ReadObject();
                         hash.Add(key, value);
                     }
-                    if (type == RubyMarshal.Types.HashWithDefault) hash.DefaultValue = ReadObject();
+                    if (type == RubyMarshal.Types.HASH_WITH_DEFAULT) hash.DefaultValue = ReadObject();
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Struct:
+                case RubyMarshal.Types.STRUCT:
                 {
                     var idx = Prepare();
                     var obj = new RubyStruct();
@@ -526,7 +530,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.UserDefined:
+                case RubyMarshal.Types.USER_DEFINED:
                 {
                     var klass = ReadUnique();
                     var obj = RubyUserDefinedObject.TryGetUserDefinedObject(klass.Name);
@@ -540,14 +544,17 @@ namespace IamI.Lib.Serialization.RubyMarshal
                         }
                         obj = new DefaultRubyUserDefinedDumpObject {Raw = data.Raw};
                     }
-                    else obj.Read(m_reader);
+                    else
+                    {
+                        obj.Read(_m_reader);
+                    }
                     obj.ClassName = klass;
                     v = obj;
                     v = Entry(v);
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.UserMarshal:
+                case RubyMarshal.Types.USER_MARSHAL:
                 {
                     var klass = ReadUnique();
                     var obj = new DefaultRubyUserDefinedMarshalDumpObject();
@@ -561,7 +568,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     extmod?.Clear();
                 }
                     break;
-                case RubyMarshal.Types.Object:
+                case RubyMarshal.Types.OBJECT:
                 {
                     var idx = Prepare();
                     var obj = new RubyObject();
@@ -573,7 +580,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Class:
+                case RubyMarshal.Types.CLASS:
                 {
                     var str = ReadString();
                     v = RubyClass.GetClass(RubySymbol.GetSymbol(str));
@@ -581,7 +588,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Module:
+                case RubyMarshal.Types.MODULE:
                 {
                     var str = ReadString();
                     v = RubyModule.GetModule(RubySymbol.GetSymbol(str));
@@ -589,19 +596,22 @@ namespace IamI.Lib.Serialization.RubyMarshal
                     v = Leave(v);
                 }
                     break;
-                case RubyMarshal.Types.Symbol:
+                case RubyMarshal.Types.SYMBOL:
                     if (hasivp)
                     {
                         v = ReadSymbolReal(ivp);
                         ivp = false;
                     }
-                    else v = ReadSymbolReal(false);
+                    else
+                    {
+                        v = ReadSymbolReal(false);
+                    }
                     v = Leave(v);
                     break;
-                case RubyMarshal.Types.SymbolLink:
+                case RubyMarshal.Types.SYMBOL_LINK:
                     v = ReadSymbolLink();
                     break;
-                case RubyMarshal.Types.Data:
+                case RubyMarshal.Types.DATA:
                 /*  TODO: Data Support
                     {
                         VALUE klass = path2class(r_unique(arg));
@@ -620,7 +630,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                         v = r_leave(v, arg);
                     }
                  */
-                case RubyMarshal.Types.ModuleOld:
+                case RubyMarshal.Types.MODULE_OLD:
                 /*
                     TODO: ModuleOld Support
                     {

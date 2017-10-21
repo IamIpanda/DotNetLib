@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClass
@@ -8,7 +6,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
     [RubyUserDefinedObject("Table")]
     public class RubyTable : RubyUserDefinedObject
     {
-        private short[,,] value;
+        private short[,,] _value;
         public int XSize { get; private set; }
         public int YSize { get; private set; }
         public int ZSize { get; private set; }
@@ -18,7 +16,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
 
         public RubyTable(int x_size, int y_size, int z_size)
         {
-            value = new short[x_size, y_size, z_size];
+            _value = new short[x_size, y_size, z_size];
             XSize = x_size;
             YSize = y_size;
             ZSize = z_size;
@@ -31,13 +29,13 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
         {
             get
             {
-                if (x < XSize && y < YSize && z < ZSize) return value[x, y, z];
+                if (x < XSize && y < YSize && z < ZSize) return _value[x, y, z];
                 Logger.Default.Warning($"Trying to get [{x}, {y}, {z}] from {nameof(RubyTable)}[{XSize}, {YSize}, {ZSize}].");
                 return 0;
             }
             set
             {
-                if (x < XSize && y < YSize && z < ZSize) this.value[x, y, z] = value;
+                if (x < XSize && y < YSize && z < ZSize) this._value[x, y, z] = value;
                 Logger.Default.Warning($"Trying to set [{x}, {y}, {z}] = {value} from {nameof(RubyTable)}[{XSize}, {YSize}, {ZSize}].");
             }
         }
@@ -45,8 +43,8 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
         public void Resize(int x_size, int y_size, int z_size)
         {
             var new_value = new short[x_size, y_size, z_size];
-            for (var i = 0; i < x_size && i < XSize; i++) for (var j = 0; j < y_size && j < YSize; j++) for (var k = 0; k < z_size && k < ZSize; k++) new_value[i, j, k] = value[i, j, k];
-            value = new_value;
+            for (var i = 0; i < x_size && i < XSize; i++) for (var j = 0; j < y_size && j < YSize; j++) for (var k = 0; k < z_size && k < ZSize; k++) new_value[i, j, k] = _value[i, j, k];
+            _value = new_value;
             XSize = x_size;
             YSize = y_size;
             ZSize = z_size;
@@ -76,8 +74,8 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             YSize = reader.ReadInt32();
             ZSize = reader.ReadInt32();
             reader.ReadInt32(); // Length Value 2
-            value = new short[XSize, YSize, ZSize];
-            for (var i = 0; i < ZSize; i++) for (var j = 0; j < YSize; j++) for (var k = 0; k < XSize; k++) value[k, j, i] = reader.ReadInt16();
+            _value = new short[XSize, YSize, ZSize];
+            for (var i = 0; i < ZSize; i++) for (var j = 0; j < YSize; j++) for (var k = 0; k < XSize; k++) _value[k, j, i] = reader.ReadInt16();
             return this;
         }
 
@@ -89,7 +87,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel.RPGMakerUserDefinedClas
             writer.Write(YSize);
             writer.Write(ZSize);
             writer.Write(XSize * YSize * ZSize); // Length Value 2
-            for (var i = 0; i < ZSize; i++) for (var j = 0; j < YSize; j++) for (var k = 0; k < XSize; k++) writer.Write(value[k, j, i]);
+            for (var i = 0; i < ZSize; i++) for (var j = 0; j < YSize; j++) for (var k = 0; k < XSize; k++) writer.Write(_value[k, j, i]);
         }
     }
 }

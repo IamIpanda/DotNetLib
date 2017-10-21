@@ -5,31 +5,31 @@ using System.Text;
 namespace IamI.Lib.Others._1024
 {
     /// <summary>
-    /// 对一组操作的抽象。
+    ///     对一组操作的抽象。
     /// </summary>
     public class Movement
     {
         /// <summary>
-        /// 依时间排序，记录的一组操作。
+        ///     依时间排序，记录的一组操作。
         /// </summary>
-        public List<List<Action>> actions = new List<List<Action>>();
+        public List<List<Action>> Actions = new List<List<Action>>();
 
         /// <summary>
-        /// 获取 moment = 
+        ///     获取 moment =
         /// </summary>
         /// <param name="index"></param>
         public List<Action> this[int index]
         {
             get
             {
-                while(actions.Count <= index)
-                    actions.Add(new List<Action>());
-                return actions[index];
+                while (Actions.Count <= index)
+                    Actions.Add(new List<Action>());
+                return Actions[index];
             }
         }
 
         /// <summary>
-        /// 向队列中添加一个 Action, Type = ActionType::Appear
+        ///     向队列中添加一个 Action, Type = ActionType::Appear
         /// </summary>
         /// <param name="position_x">指示方块出现的X坐标</param>
         /// <param name="position_y">指示方块出现的Y坐标</param>
@@ -45,7 +45,7 @@ namespace IamI.Lib.Others._1024
         }
 
         /// <summary>
-        /// 向队列中添加一个 Action，Type = ActionType::Disappear
+        ///     向队列中添加一个 Action，Type = ActionType::Disappear
         /// </summary>
         /// <param name="position_x">指示方块消失的X坐标</param>
         /// <param name="position_y">指示方块消失的Y坐标</param>
@@ -68,14 +68,14 @@ namespace IamI.Lib.Others._1024
         }
 
         /// <summary>
-        /// 从队列中弹出一组操作进行执行。
+        ///     从队列中弹出一组操作进行执行。
         /// </summary>
         /// <returns>队列顶的 Actions。</returns>
         public List<Action> Pop()
         {
-            if (actions.Count == 0) return null;
-            var answer = actions[0];
-            actions.RemoveAt(0);
+            if (Actions.Count == 0) return null;
+            var answer = Actions[0];
+            Actions.RemoveAt(0);
             return answer;
         }
 
@@ -84,11 +84,11 @@ namespace IamI.Lib.Others._1024
             var sb = new StringBuilder("[Movement]");
             sb.AppendLine();
             sb.AppendLine();
-            for (var i = 0; i < actions.Count; i++)
+            for (var i = 0; i < Actions.Count; i++)
             {
                 sb.AppendFormat("Step [{0}]", i + 1);
                 sb.AppendLine();
-                sb.Append(string.Join(Environment.NewLine, actions[i].ConvertAll(input => input.ToString())));
+                sb.Append(string.Join(Environment.NewLine, Actions[i].ConvertAll(input => input.ToString())));
                 sb.AppendLine();
                 sb.AppendLine();
             }

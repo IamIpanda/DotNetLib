@@ -2,29 +2,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using IamI.Lib.Basic.Calculator.CalculatorNode;
+using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.Basic.Calculator
 {
     /// <summary>
-    /// 对中序表达式的封装。
+    ///     对中序表达式的封装。
     /// </summary>
     public class SequentialExpression
     {
+        private SequentialExpression()
+        {
+        }
+
         public List<CalculatorNode.CalculatorNode> Nodes { get; internal set; }
 
-        private SequentialExpression() { }
-
         /// <summary>
-        /// 将此中序表达式转化为前序表达式。
-        /// 此为对 PreorderExpression.FromSeqientalExpression 的转发。
+        ///     将此中序表达式转化为前序表达式。
+        ///     此为对 PreorderExpression.FromSeqientalExpression 的转发。
         /// </summary>
         /// <returns>所对应的前序表达式</returns>
-        public PreorderExpression ToPreorderExpression() { return PreorderExpression.FromSeqientialExpression(this); }
+        public PreorderExpression ToPreorderExpression()
+        {
+            return PreorderExpression.FromSeqientialExpression(this);
+        }
 
-        public override string ToString() { return string.Join(" ", Nodes.Select(node => node.ToString()).ToArray()); }
+        public override string ToString()
+        {
+            return string.Join(" ", Nodes.Select(node => node.ToString()).ToArray());
+        }
 
         /// <summary>
-        /// 从字符串中初始化中序表达式。
+        ///     从字符串中初始化中序表达式。
         /// </summary>
         /// <param name="expression">表达式字符串</param>
         /// <returns>对应的中序表达式。</returns>
@@ -66,19 +75,28 @@ namespace IamI.Lib.Basic.Calculator
                         else break;
                     }
                     var name = builder.ToString();
-                    if (FunctionCalculatorNode.LegalFunctions.Contains(name)) nodes.Add(new FunctionCalculatorNode {Function = name});
+                    if (FunctionCalculatorNode.LegalFunctions.Contains(name))
+                        nodes.Add(new FunctionCalculatorNode {Function = name});
                     else nodes.Add(new VariableCalculatorNode {VariableName = name});
                 }
-                else Log.Logger.Default.Warning($"Can't realize the char '{_char}' when analyze the expression \"{expression}\". Will be Ignored.");
+                else
+                {
+                    Logger.Default.Warning(
+                        $"Can't realize the char '{_char}' when analyze the expression \"{expression}\". Will be Ignored.");
+                }
             }
             return new SequentialExpression {Nodes = nodes};
         }
 
         /// <summary>
-        /// 判断此字符是否一个合法的变量名。
+        ///     判断此字符是否一个合法的变量名。
         /// </summary>
         /// <param name="_char">变量名中所包含的字符</param>
         /// <returns></returns>
-        public static bool IsValidVariableNameChar(char _char) { return _char >= 'a' && _char < 'z' || _char >= 'A' && _char <= 'Z' || _char >= '0' && _char <= '9' || _char == '_' || _char == '@'; }
+        public static bool IsValidVariableNameChar(char _char)
+        {
+            return _char >= 'a' && _char < 'z' || _char >= 'A' && _char <= 'Z' || _char >= '0' && _char <= '9' ||
+                   _char == '_' || _char == '@';
+        }
     }
 }

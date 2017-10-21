@@ -3,26 +3,26 @@ using System.Text;
 
 namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 {
-    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Regexp /{" + nameof(Pattern) + "}/")]
+    [System.Diagnostics.DebuggerDisplay("RubyMarshal::Regexp /{" + nameof(pattern) + "}/")]
     [Serializable]
     public class RubyRegexp : RubyObject
     {
-        public RubyRegexpOptions Options;
-        public RubyString Pattern;
+        public RubyRegexpOptions options;
+        public RubyString pattern;
 
-        public RubyRegexp(RubyString Pattern, RubyRegexpOptions Options)
+        public RubyRegexp(RubyString pattern, RubyRegexpOptions options)
         {
-            this.Pattern = Pattern;
-            this.Options = Options;
+            this.pattern = pattern;
+            this.options = options;
             ClassName = RubySymbol.GetSymbol("Regexp");
         }
 
         public RubyRegexp() : this(new RubyString(), new RubyRegexpOptions()) { }
 
-        public override Encoding Encoding { get { return Pattern.Encoding; } set { Pattern.Encoding = value; } }
-        public override object Clone() { return new RubyRegexp(Pattern.Clone() as RubyString, Options); }
+        public override Encoding Encoding { get { return pattern.Encoding; } set { pattern.Encoding = value; } }
+        public override object Clone() { return new RubyRegexp(pattern.Clone() as RubyString, options); }
 
-        public override string ToString() { return $"/{Pattern}/"; }
+        public override string ToString() { return $"/{pattern}/"; }
     }
 
     [Flags]

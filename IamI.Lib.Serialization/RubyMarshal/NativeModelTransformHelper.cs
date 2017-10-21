@@ -54,7 +54,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
         public static Regex TransformToNativeModel(this RubyRegexp self)
         {
             var option = RegexOptions.None;
-            switch (self.Options)
+            switch (self.options)
             {
                 case RubyRegexpOptions.None:
                     // Ignored.
@@ -80,7 +80,7 @@ namespace IamI.Lib.Serialization.RubyMarshal
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            return new Regex(self.Pattern.Text, option);
+            return new Regex(self.pattern.Text, option);
         }
 
         public static string TransformToNativeModel(this RubyString self) { return self.Text; }

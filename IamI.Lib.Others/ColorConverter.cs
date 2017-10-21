@@ -1,14 +1,12 @@
-﻿using System.Runtime.InteropServices;
-
-namespace IamI.Lib.Others
+﻿namespace IamI.Lib.Others
 {
     /// <summary>
-    /// 协助对颜色空间进行转化的类。
+    ///     协助对颜色空间进行转化的类。
     /// </summary>
     public static class ColorConverter
     {
         /// <summary>
-        /// 将 HSV/HSB 变换为 RGB 的计算。
+        ///     将 HSV/HSB 变换为 RGB 的计算。
         /// </summary>
         /// <param name="h">色相值（Hue）。0-360之间，以角度计数的角度值。</param>
         /// <param name="s">饱和度（Saturation）。0-100之间的百分比。</param>
@@ -35,7 +33,7 @@ namespace IamI.Lib.Others
 
 
         /// <summary>
-        /// 将 HSL 变换到 RGB 的计算。
+        ///     将 HSL 变换到 RGB 的计算。
         /// </summary>
         /// <param name="h">色相值（Hue）。0-360之间，以角度计数的角度值。</param>
         /// <param name="s">饱和度（Saturation）。0-100之间的百分比。</param>
@@ -61,7 +59,7 @@ namespace IamI.Lib.Others
         }
 
         /// <summary>
-        /// 根据色调转换颜色
+        ///     根据色调转换颜色
         /// </summary>
         /// <param name="r">要转换的颜色的 R</param>
         /// <param name="g">要转换的颜色的 G</param>
@@ -71,7 +69,8 @@ namespace IamI.Lib.Others
         /// <param name="tone_b">色调的 B</param>
         /// <param name="tone_a">色调的 A</param>
         /// <returns>R, G, B 值</returns>
-        public static (int, int, int) ChangeTone(int r, int g, int b, float tone_r, float tone_g, float tone_b, float tone_a)
+        public static (int, int, int) ChangeTone(int r, int g, int b, float tone_r, float tone_g, float tone_b,
+            float tone_a)
         {
             var grayfull = (r * 38 + g * 75 + b * 15) >> 7;
             var result_r = (int) (tone_r + r + (grayfull - r) * tone_a / 256F);
@@ -86,6 +85,4 @@ namespace IamI.Lib.Others
             return (result_r, result_g, result_b);
         }
     }
-
-
 }

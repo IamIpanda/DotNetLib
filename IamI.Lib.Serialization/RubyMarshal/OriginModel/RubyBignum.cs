@@ -10,21 +10,21 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
     public sealed class RubyBignum : RubyObject, IFormattable, IComparable, IConvertible, IEquatable<RubyBignum>
     {
         // Fields
-        private const ulong Base = 0x100000000L;
-        private const int bias = 0x433;
-        private const int BitsPerDigit = 0x20;
-        private readonly uint[] data;
-        private const int DecimalScaleFactorMask = 0xff0000;
-        private const int DecimalSignMask = -2147483648;
+        private const ulong BASE = 0x100000000L;
+        private const int BIAS = 0x433;
+        private const int BITS_PER_DIGIT = 0x20;
+        private readonly uint[] _data;
+        private const int DECIMAL_SCALE_FACTOR_MASK = 0xff0000;
+        private const int DECIMAL_SIGN_MASK = -2147483648;
         public static readonly RubyBignum One = new RubyBignum(1, new uint[] {1});
-        private readonly short sign;
+        private readonly short _sign;
         public static readonly RubyBignum Zero = new RubyBignum(0, new uint[0]);
         // Methods
         public RubyBignum(RubyBignum copy)
         {
             if (ReferenceEquals(copy, null)) throw new ArgumentNullException(nameof(copy));
-            sign = copy.sign;
-            data = copy.data;
+            _sign = copy._sign;
+            _data = copy._data;
             ClassName = RubySymbol.GetSymbol("Bignum");
         }
 
@@ -36,24 +36,24 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             ContractUtils.Requires(sign >= -1 && sign <= 1, "sign");
             var length = GetLength(data);
             ContractUtils.Requires(length == 0 || sign != 0, "sign");
-            this.data = data;
-            this.sign = length == 0 ? (short) 0 : (short) sign;
+            this._data = data;
+            this._sign = length == 0 ? (short) 0 : (short) sign;
             ClassName = RubySymbol.GetSymbol("Bignum");
         }
 
         public RubyBignum Abs()
         {
-            if (sign == -1) { return -this; }
+            if (_sign == -1) { return -this; }
             return this;
         }
 
         public static RubyBignum Add(RubyBignum x, RubyBignum y) { return x + y; }
 
-        private static uint[] add0(uint[] x, int xl, uint[] y, int yl) { return xl >= yl ? InternalAdd(x, xl, y, yl) : InternalAdd(y, yl, x, xl); }
+        private static uint[] Add0(uint[] x, int xl, uint[] y, int yl) { return xl >= yl ? InternalAdd(x, xl, y, yl) : InternalAdd(y, yl, x, xl); }
 
         public bool AsDecimal(out decimal ret)
         {
-            if (sign == 0)
+            if (_sign == 0)
             {
                 ret = 0M;
                 return true;
@@ -67,60 +67,60 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             var lo = 0;
             var mid = 0;
             var hi = 0;
-            if (length > 2) hi = (int) data[2];
-            if (length > 1) mid = (int) data[1];
-            if (length > 0) lo = (int) data[0];
-            ret = new decimal(lo, mid, hi, sign < 0, 0);
+            if (length > 2) hi = (int) _data[2];
+            if (length > 1) mid = (int) _data[1];
+            if (length > 0) lo = (int) _data[0];
+            ret = new decimal(lo, mid, hi, _sign < 0, 0);
             return true;
         }
 
         public bool AsInt32(out int ret)
         {
             ret = 0;
-            if (sign == 0) return true;
+            if (_sign == 0) return true;
             if (GetLength() > 1) return false;
-            if (data[0] > 0x80000000) return false;
-            if (data[0] == 0x80000000 && sign == 1) return false;
-            ret = (int) data[0];
-            ret *= sign;
+            if (_data[0] > 0x80000000) return false;
+            if (_data[0] == 0x80000000 && _sign == 1) return false;
+            ret = (int) _data[0];
+            ret *= _sign;
             return true;
         }
 
         public bool AsInt64(out long ret)
         {
             ret = 0L;
-            if (sign == 0) return true;
+            if (_sign == 0) return true;
             if (GetLength() > 2) return false;
-            if (data.Length == 1)
+            if (_data.Length == 1)
             {
-                ret = sign * data[0];
+                ret = _sign * _data[0];
                 return true;
             }
-            ulong num = (data[1] << 0x20) | data[0];
+            ulong num = (_data[1] << 0x20) | _data[0];
             if (num > 9223372036854775808L) return false;
-            if (num == 9223372036854775808L && sign == 1) return false;
-            ret = (long) num * sign;
+            if (num == 9223372036854775808L && _sign == 1) return false;
+            ret = (long) num * _sign;
             return true;
         }
 
         public bool AsUInt32(out uint ret)
         {
             ret = 0;
-            if (sign == 0) return true;
-            if (sign < 0) return false;
+            if (_sign == 0) return true;
+            if (_sign < 0) return false;
             if (GetLength() > 1) return false;
-            ret = data[0];
+            ret = _data[0];
             return true;
         }
 
         public bool AsUInt64(out ulong ret)
         {
             ret = 0L;
-            if (sign == 0) return true;
-            if (sign < 0) return false;
+            if (_sign == 0) return true;
+            if (_sign < 0) return false;
             if (GetLength() > 2) return false;
-            ret = data[0];
-            if (data.Length > 1) ret |= data[1] << 0x20;
+            ret = _data[0];
+            if (_data.Length > 1) ret |= _data[1] << 0x20;
             return true;
         }
 
@@ -132,40 +132,40 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             if (ReferenceEquals(x, null)) throw new ArgumentNullException(nameof(x));
             if (ReferenceEquals(y, null)) throw new ArgumentNullException(nameof(y));
-            if (x.sign == y.sign)
+            if (x._sign == y._sign)
             {
                 var length = x.GetLength();
                 var num2 = y.GetLength();
                 if (length == num2)
                 {
                     for (var i = length - 1; i >= 0; i--)
-                        if (x.data[i] != y.data[i])
+                        if (x._data[i] != y._data[i])
                         {
-                            if (x.data[i] <= y.data[i]) return -x.sign;
-                            return x.sign;
+                            if (x._data[i] <= y._data[i]) return -x._sign;
+                            return x._sign;
                         }
                     return 0;
                 }
-                if (length <= num2) return -x.sign;
-                return x.sign;
+                if (length <= num2) return -x._sign;
+                return x._sign;
             }
-            if (x.sign <= y.sign) return -1;
+            if (x._sign <= y._sign) return -1;
             return 1;
         }
 
         public int CompareTo(object obj)
         {
             if (obj == null) return 1;
-            var objA = obj as RubyBignum;
-            if (ReferenceEquals(objA, null)) throw new ArgumentException("expected integer");
-            return Compare(this, objA);
+            var obj_a = obj as RubyBignum;
+            if (ReferenceEquals(obj_a, null)) throw new ArgumentException("expected integer");
+            return Compare(this, obj_a);
         }
 
-        private static uint[] copy(uint[] v)
+        private static uint[] Copy(uint[] v)
         {
-            var destinationArray = new uint[v.Length];
-            Array.Copy(v, destinationArray, v.Length);
-            return destinationArray;
+            var destination_array = new uint[v.Length];
+            Array.Copy(v, destination_array, v.Length);
+            return destination_array;
         }
 
         public static RubyBignum Create(decimal v)
@@ -268,7 +268,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             if (flag2) return Zero;
             if (flag)
             {
-                makeTwosComplement(d);
+                MakeTwosComplement(d);
                 return new RubyBignum(-1, d);
             }
             return new RubyBignum(1, d);
@@ -299,30 +299,30 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             }
             else if (length >= l)
             {
-                var normalizeShift = GetNormalizeShift(v[l - 1]);
+                var normalize_shift = GetNormalizeShift(v[l - 1]);
                 var un = new uint[length + 1];
-                var numArray2 = new uint[l];
-                Normalize(u, length, un, normalizeShift);
-                Normalize(v, l, numArray2, normalizeShift);
+                var num_array2 = new uint[l];
+                Normalize(u, length, un, normalize_shift);
+                Normalize(v, l, num_array2, normalize_shift);
                 q = new uint[length - l + 1];
                 r = null;
                 for (var j = length - l; j >= 0; j--)
                 {
                     var num9 = (ulong) (0x100000000L * un[j + l] + un[j + l - 1]);
-                    var num10 = num9 / (ulong) numArray2[l - 1];
-                    num9 -= num10 * numArray2[l - 1];
+                    var num10 = num9 / (ulong) num_array2[l - 1];
+                    num9 -= num10 * num_array2[l - 1];
                     do
                     {
-                        if (num10 < 0x100000000L && num10 * numArray2[l - 2] <= num9 * (ulong) 0x100000000L + un[j + l - 2]) break;
+                        if (num10 < 0x100000000L && num10 * num_array2[l - 2] <= num9 * (ulong) 0x100000000L + un[j + l - 2]) break;
                         num10 -= (ulong) 1L;
-                        num9 += numArray2[l - 1];
+                        num9 += num_array2[l - 1];
                     } while (num9 < 0x100000000L);
                     var num12 = 0L;
                     var num13 = 0L;
                     var index = 0;
                     while (index < l)
                     {
-                        var num14 = numArray2[index] * num10;
+                        var num14 = num_array2[index] * num10;
                         num13 = un[index + j] - (uint) num14 - num12;
                         un[index + j] = (uint) num13;
                         num14 = num14 >> 0x20;
@@ -339,7 +339,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                         ulong num15 = 0L;
                         for (index = 0; index < l; index++)
                         {
-                            num15 = numArray2[index] + un[j + index] + num15;
+                            num15 = num_array2[index] + un[j + index] + num15;
                             un[j + index] = (uint) num15;
                             num15 = num15 >> 0x20;
                         }
@@ -347,12 +347,12 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                         un[j + l] = (uint) num15;
                     }
                 }
-                Unnormalize(un, out r, normalizeShift);
+                Unnormalize(un, out r, normalize_shift);
             }
             else
             {
-                var numArray3 = new uint[1];
-                q = numArray3;
+                var num_array3 = new uint[1];
+                q = num_array3;
                 r = u;
             }
         }
@@ -361,9 +361,9 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             if (ReferenceEquals(x, null)) throw new ArgumentNullException(nameof(x));
             if (ReferenceEquals(y, null)) throw new ArgumentNullException(nameof(y));
-            DivModUnsigned(x.data, y.data, out uint[] numArray, out uint[] numArray2);
-            remainder = new RubyBignum(x.sign, numArray2);
-            return new RubyBignum(x.sign * y.sign, numArray);
+            DivModUnsigned(x._data, y._data, out uint[] num_array, out uint[] num_array2);
+            remainder = new RubyBignum(x._sign, num_array2);
+            return new RubyBignum(x._sign * y._sign, num_array);
         }
 
         public bool Equals(RubyBignum other)
@@ -376,11 +376,11 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         private static ushort Exponent(byte[] v) { return (ushort) (((ushort) (v[7] & 0x7f) << 4) | ((ushort) (v[6] & 240) >> 4)); }
 
-        private static uint extend(uint v, ref bool seenNonZero)
+        private static uint Extend(uint v, ref bool seen_non_zero)
         {
-            if (seenNonZero) return ~v;
+            if (seen_non_zero) return ~v;
             if (v == 0) return 0;
-            seenNonZero = true;
+            seen_non_zero = true;
             return ~v + 1;
         }
 
@@ -388,7 +388,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             if (IsZero()) return 1;
             var index = GetLength() - 1;
-            var num2 = data[index];
+            var num2 = _data[index];
             var num3 = index * 0x20;
             do
             {
@@ -402,15 +402,15 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         public override int GetHashCode()
         {
-            if (data.Length == 0) return 0;
+            if (_data.Length == 0) return 0;
             uint num = 0;
-            foreach (var num2 in data) num += num2;
+            foreach (var num2 in _data) num += num2;
             var num3 = (int) num;
             if (IsNegative()) return -num3;
             return num3;
         }
 
-        private int GetLength() { return GetLength(data); }
+        private int GetLength() { return GetLength(_data); }
 
         private static int GetLength(uint[] data)
         {
@@ -450,31 +450,31 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             return num;
         }
 
-        private static uint getOne(bool isNeg, uint[] data, int i, ref bool seenNonZero)
+        private static uint GetOne(bool is_neg, uint[] data, int i, ref bool seen_non_zero)
         {
             if (i < data.Length)
             {
                 var v = data[i];
-                if (!isNeg) return v;
-                return extend(v, ref seenNonZero);
+                if (!is_neg) return v;
+                return Extend(v, ref seen_non_zero);
             }
-            if (!isNeg) return 0;
+            if (!is_neg) return 0;
             return uint.MaxValue;
         }
 
         public TypeCode GetTypeCode() { return TypeCode.Object; }
 
-        public uint GetWord(int index) { return data[index]; }
+        public uint GetWord(int index) { return _data[index]; }
 
         public int GetWordCount() { return IsZero() ? 1 : GetLength(); }
 
         public uint[] GetWords()
         {
-            if (sign == 0) return new uint[1];
+            if (_sign == 0) return new uint[1];
             var length = GetLength();
-            var destinationArray = new uint[length];
-            Array.Copy(data, destinationArray, length);
-            return destinationArray;
+            var destination_array = new uint[length];
+            Array.Copy(_data, destination_array, length);
+            return destination_array;
         }
 
         private static uint[] InternalAdd(uint[] x, int xl, uint[] y, int yl)
@@ -505,31 +505,31 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 }
                 return v;
             }
-            v = resize(v, xl + 1);
+            v = Resize(v, xl + 1);
             v[index] = (uint) num2;
             return v;
         }
 
-        public bool IsNegative() { return sign < 0; }
+        public bool IsNegative() { return _sign < 0; }
 
-        private bool IsOdd() { return data != null && data.Length > 0 && (data[0] & 1) != 0; }
+        private bool IsOdd() { return _data != null && _data.Length > 0 && (_data[0] & 1) != 0; }
 
-        public bool IsPositive() { return sign > 0; }
+        public bool IsPositive() { return _sign > 0; }
 
-        public bool IsZero() { return sign == 0; }
+        public bool IsZero() { return _sign == 0; }
 
         public static RubyBignum LeftShift(RubyBignum x, int shift) { return x << shift; }
 
         public double Log() { return Log(2.7182818284590451); }
 
-        public double Log(double newBase)
+        public double Log(double new_base)
         {
-            if (IsNegative() || newBase == 1.0 || this == Zero || newBase == 0.0 && this != One) return double.NaN;
-            if (newBase == double.PositiveInfinity) return !(this == One) ? double.NaN : 0.0;
+            if (IsNegative() || new_base == 1.0 || this == Zero || new_base == 0.0 && this != One) return double.NaN;
+            if (new_base == double.PositiveInfinity) return !(this == One) ? double.NaN : 0.0;
             var index = GetLength() - 1;
             var num2 = -1;
             for (var i = 0x1f; i >= 0; i--)
-                if ((data[index] & ((int) 1 << i)) != 0L)
+                if ((_data[index] & ((int) 1 << i)) != 0L)
                 {
                     num2 = i + index * 0x20;
                     break;
@@ -551,12 +551,12 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 num6 *= 0.5;
                 one = one >> 1;
             }
-            return (Math.Log(d) + Math.Log(2.0) * num4) / Math.Log(newBase);
+            return (Math.Log(d) + Math.Log(2.0) * num4) / Math.Log(new_base);
         }
 
         public double Log10() { return Log(10.0); }
 
-        private static uint[] makeTwosComplement(uint[] d)
+        private static uint[] MakeTwosComplement(uint[] d)
         {
             var index = 0;
             uint num2 = 0;
@@ -580,7 +580,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 }
                 return d;
             }
-            d = resize(d, d.Length + 1);
+            d = Resize(d, d.Length + 1);
             d[d.Length - 1] = 1;
             return d;
         }
@@ -674,8 +674,8 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             if (ReferenceEquals(x, null)) throw new ArgumentNullException(nameof(x));
             if (ReferenceEquals(y, null)) throw new ArgumentNullException(nameof(y));
-            if (x.sign == y.sign) return new RubyBignum(x.sign, add0(x.data, x.GetLength(), y.data, y.GetLength()));
-            return x - new RubyBignum(-y.sign, y.data);
+            if (x._sign == y._sign) return new RubyBignum(x._sign, Add0(x._data, x.GetLength(), y._data, y.GetLength()));
+            return x - new RubyBignum(-y._sign, y._data);
         }
 
         public static RubyBignum operator &(RubyBignum x, RubyBignum y)
@@ -684,22 +684,22 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             if (ReferenceEquals(y, null)) throw new ArgumentNullException(nameof(y));
             var length = x.GetLength();
             var num2 = y.GetLength();
-            var data = x.data;
-            var numArray2 = y.data;
+            var data = x._data;
+            var num_array2 = y._data;
             var num3 = Math.Max(length, num2);
             var d = new uint[num3];
-            var isNeg = x.sign == -1;
-            var flag2 = y.sign == -1;
-            var seenNonZero = false;
+            var is_neg = x._sign == -1;
+            var flag2 = y._sign == -1;
+            var seen_non_zero = false;
             var flag4 = false;
             for (var i = 0; i < num3; i++)
             {
-                var num5 = getOne(isNeg, data, i, ref seenNonZero);
-                var num6 = getOne(flag2, numArray2, i, ref flag4);
+                var num5 = GetOne(is_neg, data, i, ref seen_non_zero);
+                var num6 = GetOne(flag2, num_array2, i, ref flag4);
                 d[i] = num5 & num6;
             }
-            if (isNeg && flag2) return new RubyBignum(-1, makeTwosComplement(d));
-            if (!isNeg && !flag2) return new RubyBignum(1, d);
+            if (is_neg && flag2) return new RubyBignum(-1, MakeTwosComplement(d));
+            if (!is_neg && !flag2) return new RubyBignum(1, d);
             return new RubyBignum(1, d);
         }
 
@@ -709,22 +709,22 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             if (ReferenceEquals(y, null)) throw new ArgumentNullException(nameof(y));
             var length = x.GetLength();
             var num2 = y.GetLength();
-            var data = x.data;
-            var numArray2 = y.data;
+            var data = x._data;
+            var num_array2 = y._data;
             var num3 = Math.Max(length, num2);
-            var numArray3 = new uint[num3];
-            var isNeg = x.sign == -1;
-            var flag2 = y.sign == -1;
-            var seenNonZero = false;
+            var num_array3 = new uint[num3];
+            var is_neg = x._sign == -1;
+            var flag2 = y._sign == -1;
+            var seen_non_zero = false;
             var flag4 = false;
             for (var i = 0; i < num3; i++)
             {
-                var num5 = getOne(isNeg, data, i, ref seenNonZero);
-                var num6 = getOne(flag2, numArray2, i, ref flag4);
-                numArray3[i] = num5 | num6;
+                var num5 = GetOne(is_neg, data, i, ref seen_non_zero);
+                var num6 = GetOne(flag2, num_array2, i, ref flag4);
+                num_array3[i] = num5 | num6;
             }
-            if ((!isNeg || !flag2) && !isNeg && !flag2) { return new RubyBignum(1, numArray3); }
-            return new RubyBignum(-1, makeTwosComplement(numArray3));
+            if ((!is_neg || !flag2) && !is_neg && !flag2) { return new RubyBignum(1, num_array3); }
+            return new RubyBignum(-1, MakeTwosComplement(num_array3));
         }
 
         public static RubyBignum operator /(RubyBignum x, RubyBignum y) { return DivRem(x, y, out RubyBignum integer); }
@@ -748,23 +748,23 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             if (ReferenceEquals(y, null)) { throw new ArgumentNullException(nameof(y)); }
             var length = x.GetLength();
             var num2 = y.GetLength();
-            var data = x.data;
-            var numArray2 = y.data;
+            var data = x._data;
+            var num_array2 = y._data;
             var num3 = Math.Max(length, num2);
-            var numArray3 = new uint[num3];
-            var isNeg = x.sign == -1;
-            var flag2 = y.sign == -1;
-            var seenNonZero = false;
+            var num_array3 = new uint[num3];
+            var is_neg = x._sign == -1;
+            var flag2 = y._sign == -1;
+            var seen_non_zero = false;
             var flag4 = false;
             for (var i = 0; i < num3; i++)
             {
-                var num5 = getOne(isNeg, data, i, ref seenNonZero);
-                var num6 = getOne(flag2, numArray2, i, ref flag4);
-                numArray3[i] = num5 ^ num6;
+                var num5 = GetOne(is_neg, data, i, ref seen_non_zero);
+                var num6 = GetOne(flag2, num_array2, i, ref flag4);
+                num_array3[i] = num5 ^ num6;
             }
-            if (isNeg && flag2) { return new RubyBignum(1, numArray3); }
-            if (!isNeg && !flag2) { return new RubyBignum(1, numArray3); }
-            return new RubyBignum(-1, makeTwosComplement(numArray3));
+            if (is_neg && flag2) { return new RubyBignum(1, num_array3); }
+            if (!is_neg && !flag2) { return new RubyBignum(1, num_array3); }
+            return new RubyBignum(-1, MakeTwosComplement(num_array3));
         }
 
         public static explicit operator byte(RubyBignum self)
@@ -875,10 +875,10 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             var num = shift / 0x20;
             var num2 = shift - num * 0x20;
             var length = x.GetLength();
-            var data = x.data;
+            var data = x._data;
             var num4 = length + num + 1;
-            var numArray2 = new uint[num4];
-            if (num2 == 0) for (var i = 0; i < length; i++) numArray2[i + num] = data[i];
+            var num_array2 = new uint[num4];
+            if (num2 == 0) for (var i = 0; i < length; i++) num_array2[i + num] = data[i];
 
             else
             {
@@ -888,13 +888,13 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 while (index < length)
                 {
                     var num9 = data[index];
-                    numArray2[index + num] = (num9 << num2) | num7;
+                    num_array2[index + num] = (num9 << num2) | num7;
                     num7 = num9 >> num6;
                     index++;
                 }
-                numArray2[index + num] = num7;
+                num_array2[index + num] = num7;
             }
-            return new RubyBignum(x.sign, numArray2);
+            return new RubyBignum(x._sign, num_array2);
         }
 
         public static bool operator <(RubyBignum x, RubyBignum y) { return Compare(x, y) < 0; }
@@ -914,9 +914,9 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             var length = x.GetLength();
             var num2 = y.GetLength();
             var num3 = length + num2;
-            var data = x.data;
-            var numArray2 = y.data;
-            var numArray3 = new uint[num3];
+            var data = x._data;
+            var num_array2 = y._data;
+            var num_array3 = new uint[num3];
             for (var i = 0; i < length; i++)
             {
                 var num5 = data[i];
@@ -924,18 +924,18 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 ulong num7 = 0L;
                 for (var j = 0; j < num2; j++)
                 {
-                    num7 = num7 + num5 * numArray2[j] + numArray3[index];
-                    numArray3[index++] = (uint) num7;
+                    num7 = num7 + num5 * num_array2[j] + num_array3[index];
+                    num_array3[index++] = (uint) num7;
                     num7 = num7 >> 0x20;
                 }
                 while (num7 != 0L)
                 {
-                    num7 += numArray3[index];
-                    numArray3[index++] = (uint) num7;
+                    num7 += num_array3[index];
+                    num_array3[index++] = (uint) num7;
                     num7 = num7 >> 0x20;
                 }
             }
-            return new RubyBignum(x.sign * y.sign, numArray3);
+            return new RubyBignum(x._sign * y._sign, num_array3);
         }
 
         public static RubyBignum operator ~(RubyBignum x)
@@ -952,11 +952,11 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             var index = shift / 0x20;
             var num2 = shift - index * 0x20;
             var length = x.GetLength();
-            var data = x.data;
+            var data = x._data;
             var num4 = length - index;
             if (num4 < 0) num4 = 0;
-            var numArray2 = new uint[num4];
-            if (num2 == 0) for (var i = length - 1; i >= index; i--) numArray2[i - index] = data[i];
+            var num_array2 = new uint[num4];
+            if (num2 == 0) for (var i = length - 1; i >= index; i--) num_array2[i - index] = data[i];
 
             else
             {
@@ -965,11 +965,11 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 for (var j = length - 1; j >= index; j--)
                 {
                     var num9 = data[j];
-                    numArray2[j - index] = (num9 >> num2) | num7;
+                    num_array2[j - index] = (num9 >> num2) | num7;
                     num7 = num9 << num6;
                 }
             }
-            var integer = new RubyBignum(x.sign, numArray2);
+            var integer = new RubyBignum(x._sign, num_array2);
             if (x.IsNegative())
             {
                 for (var k = 0; k < index; k++) if (data[k] != 0) return integer - One;
@@ -981,30 +981,30 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         public static RubyBignum operator -(RubyBignum x, RubyBignum y)
         {
-            uint[] numArray;
+            uint[] num_array;
             var sign = Compare(x, y);
             if (sign != 0)
             {
-                if (x.sign != y.sign) return new RubyBignum(sign, add0(x.data, x.GetLength(), y.data, y.GetLength()));
-                switch (sign * x.sign)
+                if (x._sign != y._sign) return new RubyBignum(sign, Add0(x._data, x.GetLength(), y._data, y.GetLength()));
+                switch (sign * x._sign)
                 {
                     case -1:
-                        numArray = sub(y.data, y.GetLength(), x.data, x.GetLength());
+                        num_array = Sub(y._data, y.GetLength(), x._data, x.GetLength());
                         goto Label_0084;
                     case 1:
-                        numArray = sub(x.data, x.GetLength(), y.data, y.GetLength());
+                        num_array = Sub(x._data, x.GetLength(), y._data, y.GetLength());
                         goto Label_0084;
                 }
             }
             return Zero;
             Label_0084:
-            return new RubyBignum(sign, numArray);
+            return new RubyBignum(sign, num_array);
         }
 
         public static RubyBignum operator -(RubyBignum x)
         {
             if (ReferenceEquals(x, null)) throw new ArgumentNullException(nameof(x));
-            return new RubyBignum(-x.sign, x.data);
+            return new RubyBignum(-x._sign, x._data);
         }
 
         public RubyBignum Power(int exp)
@@ -1023,43 +1023,43 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             return one;
         }
 
-        private static uint[] resize(uint[] v, int len)
+        private static uint[] Resize(uint[] v, int len)
         {
             if (v.Length == len) return v;
-            var numArray = new uint[len];
+            var num_array = new uint[len];
             var num = Math.Min(v.Length, len);
-            for (var i = 0; i < num; i++) numArray[i] = v[i];
-            return numArray;
+            for (var i = 0; i < num; i++) num_array[i] = v[i];
+            return num_array;
         }
 
         public static RubyBignum RightShift(RubyBignum x, int shift) { return x >> shift; }
 
         public RubyBignum Square() { return this * this; }
 
-        private static uint[] sub(uint[] x, int xl, uint[] y, int yl)
+        private static uint[] Sub(uint[] x, int xl, uint[] y, int yl)
         {
-            var numArray = new uint[xl];
+            var num_array = new uint[xl];
             var flag = false;
             var index = 0;
             while (index < yl)
             {
-                var maxValue = x[index];
+                var max_value = x[index];
                 var num3 = y[index];
                 if (flag)
                 {
-                    if (maxValue == 0)
+                    if (max_value == 0)
                     {
-                        maxValue = uint.MaxValue;
+                        max_value = uint.MaxValue;
                         flag = true;
                     }
                     else
                     {
-                        maxValue--;
+                        max_value--;
                         flag = false;
                     }
                 }
-                if (num3 > maxValue) { flag = true; }
-                numArray[index] = maxValue - num3;
+                if (num3 > max_value) { flag = true; }
+                num_array[index] = max_value - num3;
                 index++;
             }
             if (flag)
@@ -1067,7 +1067,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 while (index < xl)
                 {
                     var num4 = x[index];
-                    numArray[index] = num4 - 1;
+                    num_array[index] = num4 - 1;
                     if (num4 != 0)
                     {
                         index++;
@@ -1078,15 +1078,15 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             }
             while (index < xl)
             {
-                numArray[index] = x[index];
+                num_array[index] = x[index];
                 index++;
             }
-            return numArray;
+            return num_array;
         }
 
         public static RubyBignum Subtract(RubyBignum x, RubyBignum y) { return x - y; }
 
-        string IFormattable.ToString(string format, IFormatProvider formatProvider)
+        string IFormattable.ToString(string format, IFormatProvider format_provider)
         {
             if (format == null) return ToString();
             switch (format[0])
@@ -1134,40 +1134,40 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         {
             uint[] data;
             byte num;
-            if (sign == 0) return new byte[1];
-            if (-1 == sign)
+            if (_sign == 0) return new byte[1];
+            if (-1 == _sign)
             {
-                data = (uint[]) this.data.Clone();
-                makeTwosComplement(data);
+                data = (uint[]) this._data.Clone();
+                MakeTwosComplement(data);
                 num = 0xff;
             }
             else
             {
-                data = this.data;
+                data = this._data;
                 num = 0;
             }
-            var sourceArray = new byte[4 * data.Length];
+            var source_array = new byte[4 * data.Length];
             var num2 = 0;
             for (var i = 0; i < data.Length; i++)
             {
                 var num3 = data[i];
                 for (var j = 0; j < 4; j++)
                 {
-                    sourceArray[num2++] = (byte) (num3 & 0xff);
+                    source_array[num2++] = (byte) (num3 & 0xff);
                     num3 = num3 >> 8;
                 }
             }
-            var index = sourceArray.Length - 1;
+            var index = source_array.Length - 1;
             while (index > 0)
             {
-                if (sourceArray[index] != num) break;
+                if (source_array[index] != num) break;
                 index--;
             }
-            var flag = (sourceArray[index] & 0x80) != (num & 0x80);
-            var destinationArray = new byte[index + 1 + (flag ? 1 : 0)];
-            Array.Copy(sourceArray, destinationArray, (int) (index + 1));
-            if (flag) destinationArray[destinationArray.Length - 1] = num;
-            return destinationArray;
+            var flag = (source_array[index] & 0x80) != (num & 0x80);
+            var destination_array = new byte[index + 1 + (flag ? 1 : 0)];
+            Array.Copy(source_array, destination_array, (int) (index + 1));
+            if (flag) destination_array[destination_array.Length - 1] = num;
+            return destination_array;
         }
 
         public char ToChar(IFormatProvider provider)
@@ -1236,11 +1236,11 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         public string ToString(IFormatProvider provider) { return ToString(); }
 
-        public string ToString(int radix) { return MathUtils.RubyBignumToString(copy(data), sign, radix); }
+        public string ToString(int radix) { return MathUtils.RubyBignumToString(Copy(_data), _sign, radix); }
 
-        public object ToType(Type conversionType, IFormatProvider provider)
+        public object ToType(Type conversion_type, IFormatProvider provider)
         {
-            if (conversionType != typeof(RubyBignum)) throw new NotImplementedException();
+            if (conversion_type != typeof(RubyBignum)) throw new NotImplementedException();
             return this;
         }
 
@@ -1297,50 +1297,50 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         public static RubyBignum Xor(RubyBignum x, RubyBignum y) { return x ^ y; }
 
         // Properties
-        public short Sign => sign;
+        public short Sign => _sign;
 
         internal static class ContractUtils
         {
-            public static void Requires(bool precondition, string paramName)
+            public static void Requires(bool precondition, string param_name)
             {
-                if (!precondition) throw new ArgumentException("", paramName);
+                if (!precondition) throw new ArgumentException("", param_name);
             }
 
-            public static void RequiresNotNull(object value, string paramName)
+            public static void RequiresNotNull(object value, string param_name)
             {
-                if (value == null) throw new ArgumentNullException(paramName);
+                if (value == null) throw new ArgumentNullException(param_name);
             }
         }
 
         private static class MathUtils
         {
             // Fields
-            private static readonly double[] _RoundPowersOfTens = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0, 1000000000.0, 10000000000, 100000000000, 1000000000000, 10000000000000, 100000000000000, 1E+15};
+            private static readonly double[] RoundPowersOfTens = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0, 1000000000.0, 10000000000, 100000000000, 1000000000000, 10000000000000, 100000000000000, 1E+15};
 
-            private const int BitsPerDigit = 0x20;
+            private const int BITS_PER_DIGIT = 0x20;
 
-            private static readonly uint[] groupRadixValues =
+            private static readonly uint[] GroupRadixValues =
             {
                 0, 0, 0x80000000, 0xcfd41b91, 0x40000000, 0x48c27395, 0x81bf1000, 0x75db9c97, 0x40000000, 0xcfd41b91, 0x3b9aca00, 0x8c8b6d2b, 0x19a10000, 0x309f1021, 0x57f6c100, 0x98c29b81, 0x10000000,
                 0x18754571, 0x247dbc80, 0x3547667b, 0x4c4b4000, 0x6b5a6e1d, 0x94ace180, 0xcaf18367, 0xb640000, 0xe8d4a51, 0x1269ae40, 0x17179149, 0x1cb91000, 0x23744899, 0x2b73a840, 0x34e63b41, 0x40000000, 0x4cfa3cc1, 0x5c13d840, 0x6d91b519,
                 0x81bf1000
             };
 
-            private static readonly uint[] maxCharsPerDigit = {0, 0, 0x1f, 20, 15, 13, 12, 11, 10, 10, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
+            private static readonly uint[] MaxCharsPerDigit = {0, 0, 0x1f, 20, 15, 13, 12, 11, 10, 10, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
 
             // Methods
-            private static void AppendRadix(uint rem, uint radix, char[] tmp, StringBuilder buf, bool leadingZeros)
+            private static void AppendRadix(uint rem, uint radix, char[] tmp, StringBuilder buf, bool leading_zeros)
             {
                 var length = tmp.Length;
-                var startIndex = length;
-                while (startIndex > 0 && (leadingZeros || rem != 0))
+                var start_index = length;
+                while (start_index > 0 && (leading_zeros || rem != 0))
                 {
                     var num3 = rem % radix;
                     rem /= radix;
-                    tmp[--startIndex] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(int) num3];
+                    tmp[--start_index] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(int) num3];
                 }
-                if (leadingZeros) buf.Append(tmp);
-                else buf.Append(tmp, startIndex, length - startIndex);
+                if (leading_zeros) buf.Append(tmp);
+                else buf.Append(tmp, start_index, length - start_index);
             }
 
             internal static string RubyBignumToString(uint[] d, int sign, int radix)
@@ -1349,16 +1349,16 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 if (length != 0)
                 {
                     var list = new List<uint>();
-                    var num2 = groupRadixValues[radix];
+                    var num2 = GroupRadixValues[radix];
                     while (length > 0)
                     {
-                        var item = div(d, ref length, num2);
+                        var item = Div(d, ref length, num2);
                         list.Add(item);
                     }
                     var buf = new StringBuilder();
                     if (sign == -1) buf.Append("-");
                     var num4 = list.Count - 1;
-                    var tmp = new char[maxCharsPerDigit[radix]];
+                    var tmp = new char[MaxCharsPerDigit[radix]];
                     AppendRadix(list[num4--], (uint) radix, tmp, buf, false);
                     while (num4 >= 0) AppendRadix(list[num4--], (uint) radix, tmp, buf, true);
                     if (buf.Length != 0) return buf.ToString();
@@ -1366,7 +1366,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
                 return "0";
             }
 
-            private static uint div(uint[] n, ref int nl, uint d)
+            private static uint Div(uint[] n, ref int nl, uint d)
             {
                 ulong num = 0L;
                 var index = nl;
@@ -1448,7 +1448,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
             private static double GetPowerOf10(int precision)
             {
                 if (precision >= 0x10) return Math.Pow(10.0, (double) precision);
-                return _RoundPowersOfTens[precision];
+                return RoundPowersOfTens[precision];
             }
 
             private static uint GetWord(byte[] bytes, int start, int end)

@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Iami.Lib.Language.Transform
 {
-    public class zh_CN
+    public class Zh_CN
     {
         /// <summary>
-        /// 将汉字依照记述转化为拼音。
+        ///     将汉字依照记述转化为拼音。
         /// </summary>
         /// <param name="origin">要转化的单个汉字</param>
         /// <returns>汉字对应的拼音。如果不是汉字，会返回null。</returns>
@@ -22,11 +22,11 @@ namespace Iami.Lib.Language.Transform
                 return null;
             value -= 65536;
             // 勘误
-            if (wrongs.TryGetValue(value, out var answer)) return answer;
+            if (Wrongs.TryGetValue(value, out var answer)) return answer;
             //扫表
-            for (var i = pinyin_value.Length - 1; i >= 0; i--)
-                if (pinyin_value[i] <= value)
-                    return pinyin_name[i];
+            for (var i = PinyinValue.Length - 1; i >= 0; i--)
+                if (PinyinValue[i] <= value)
+                    return PinyinName[i];
             return null;
         }
 
@@ -36,13 +36,14 @@ namespace Iami.Lib.Language.Transform
         }
 
 
-        private static readonly Dictionary<int, string> wrongs 
+        private static readonly Dictionary<int, string> Wrongs
             = new Dictionary<int, string>
             {
-                { -9524, "zhen"}
+                {-9524, "zhen"}
             };
-        
-        private static readonly int[] pinyin_value = {
+
+        private static readonly int[] PinyinValue =
+        {
             -20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036,
             -20032, -20026, -20002, -19990, -19986, -19982, -19976, -19805, -19784, -19775, -19774, -19763,
             -19756, -19751, -19746, -19741, -19739, -19728, -19725, -19715, -19540, -19531, -19525, -19515,
@@ -78,7 +79,8 @@ namespace Iami.Lib.Language.Transform
             -10322, -10315, -10309, -10307, -10296, -10281, -10274, -10270, -10262, -10260, -10256, -10254
         };
 
-        private static readonly string[] pinyin_name = {
+        private static readonly string[] PinyinName =
+        {
             "A", "Ai", "An", "Ang", "Ao", "Ba", "Bai", "Ban", "Bang", "Bao", "Bei", "Ben",
             "Beng", "Bi", "Bian", "Biao", "Bie", "Bin", "Bing", "Bo", "Bu", "Ba", "Cai", "Can",
             "Cang", "Cao", "Ce", "Ceng", "Cha", "Chai", "Chan", "Chang", "Chao", "Che", "Chen", "Cheng",

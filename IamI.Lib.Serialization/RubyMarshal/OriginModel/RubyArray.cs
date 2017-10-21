@@ -53,18 +53,18 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         public bool Contains(object item) { return list.Contains(item); }
         public List<TOutput> ConvertAll<TOutput>(Converter<object, TOutput> converter) { return list.ConvertAll<TOutput>(converter); }
         public void CopyTo(object[] array) { list.CopyTo(array); }
-        public void CopyTo(object[] array, int arrayIndex) { list.CopyTo(array, arrayIndex); }
-        public void CopyTo(int index, object[] array, int arrayIndex, int count) { list.CopyTo(index, array, arrayIndex, count); }
+        public void CopyTo(object[] array, int array_index) { list.CopyTo(array, array_index); }
+        public void CopyTo(int index, object[] array, int array_index, int count) { list.CopyTo(index, array, array_index, count); }
         public bool Exists(Predicate<object> match) { return list.Exists(match); }
         public object Find(Predicate<object> match) { return list.Find(match); }
         public List<object> FindAll(Predicate<object> match) { return list.FindAll(match); }
         public int FindIndex(Predicate<object> match) { return list.FindIndex(match); }
-        public int FindIndex(int startIndex, Predicate<object> match) { return list.FindIndex(startIndex, match); }
-        public int FindIndex(int startIndex, int count, Predicate<object> match) { return list.FindIndex(startIndex, count, match); }
+        public int FindIndex(int start_index, Predicate<object> match) { return list.FindIndex(start_index, match); }
+        public int FindIndex(int start_index, int count, Predicate<object> match) { return list.FindIndex(start_index, count, match); }
         public object FindLast(Predicate<object> match) { return list.FindLast(match); }
         public int FindLastIndex(Predicate<object> match) { return list.FindLastIndex(match); }
-        public int FindLastIndex(int startIndex, Predicate<object> match) { return list.FindLastIndex(startIndex, match); }
-        public int FindLastIndex(int startIndex, int count, Predicate<object> match) { return list.FindLastIndex(startIndex, count, match); }
+        public int FindLastIndex(int start_index, Predicate<object> match) { return list.FindLastIndex(start_index, match); }
+        public int FindLastIndex(int start_index, int count, Predicate<object> match) { return list.FindLastIndex(start_index, count, match); }
         public void ForEach(Action<object> action) { list.ForEach(action); }
         public List<object>.Enumerator GetEnumerator() { return list.GetEnumerator(); }
         public List<object> GetRange(int index, int count) { return list.GetRange(index, count); }
@@ -115,11 +115,11 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         internal class RubyArrayDebugView
         {
-            private readonly RubyArray hashtable;
-            public RubyArrayDebugView(RubyArray hashtable) { this.hashtable = hashtable; }
+            private readonly RubyArray _hashtable;
+            public RubyArrayDebugView(RubyArray hashtable) { this._hashtable = hashtable; }
 
             [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.RootHidden)]
-            public object[] Objects => hashtable.ToArray();
+            public object[] Objects => _hashtable.ToArray();
         }
 
         public override string ToString() { return $"Array [Count = {Count}]"; }

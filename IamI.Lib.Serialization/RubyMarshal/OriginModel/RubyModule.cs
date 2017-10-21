@@ -9,21 +9,21 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
     {
         public string Name { get; }
         public RubySymbol Symbol { get; }
-        private static readonly Dictionary<string, RubyModule> modules = new Dictionary<string, RubyModule>();
+        private static readonly Dictionary<string, RubyModule> Modules = new Dictionary<string, RubyModule>();
 
         private RubyModule(string module_name)
         {
             Name = module_name;
             Symbol = RubySymbol.GetSymbol(module_name);
             ClassName = RubySymbol.GetSymbol("Module");
-            modules.Add(module_name, this);
+            Modules.Add(module_name, this);
         }
 
-        public static Dictionary<string, RubyModule> GetModules() { return modules; }
+        public static Dictionary<string, RubyModule> GetModules() { return Modules; }
 
         public static RubyModule GetModule(RubySymbol module_name) { return GetModule(module_name.Name); }
 
-        public static RubyModule GetModule(string module_name) { return modules.ContainsKey(module_name) ? modules[module_name] : new RubyModule(module_name); }
+        public static RubyModule GetModule(string module_name) { return Modules.ContainsKey(module_name) ? Modules[module_name] : new RubyModule(module_name); }
 
         public override string ToString() { return $"RubyModule: {Name}"; }
     }

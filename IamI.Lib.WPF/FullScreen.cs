@@ -10,39 +10,39 @@ namespace IamI.Lib.WPF
     /// </summary>
     public static class FullScreen
     {
-        private static Window fullWindow;
-        private static WindowState fullWindowState;
-        private static WindowStyle fullWindowStyle;
-        private static bool fullWindowTopMost;
-        private static ResizeMode fullWindowResizeMode;
-        private static Rect fullWindowRect;
+        private static Window _full_window;
+        private static WindowState _full_window_state;
+        private static WindowStyle _full_window_style;
+        private static bool _full_window_top_most;
+        private static ResizeMode _full_window_resize_mode;
+        private static Rect _full_window_rect;
 
         /// <summary>
         /// 进入全屏
         /// </summary>
         /// <param name="window"></param>
-        /// <param name="saveMessage">指示是否保存窗口位置信息</param>
-        public static void GoFullscreen(this Window window, bool saveMessage = true)
+        /// <param name="save_message">指示是否保存窗口位置信息</param>
+        public static void GoFullscreen(this Window window, bool save_message = true)
         {
             //已经是全屏
             if (window.IsFullscreen()) return;
 
             //存储窗体信息
-            fullWindowState = window.WindowState;
-            fullWindowStyle = window.WindowStyle;
-            fullWindowTopMost = window.Topmost;
-            if (saveMessage)
+            _full_window_state = window.WindowState;
+            _full_window_style = window.WindowStyle;
+            _full_window_top_most = window.Topmost;
+            if (save_message)
             {
-                fullWindowResizeMode = window.ResizeMode;
-                fullWindowRect.X = window.Left;
-                fullWindowRect.Y = window.Top;
-                fullWindowRect.Width = window.Width;
-                fullWindowRect.Height = window.Height;
+                _full_window_resize_mode = window.ResizeMode;
+                _full_window_rect.X = window.Left;
+                _full_window_rect.Y = window.Top;
+                _full_window_rect.Width = window.Width;
+                _full_window_rect.Height = window.Height;
             }
             else
             {
-                fullWindowResizeMode = ResizeMode.NoResize;
-                fullWindowRect = Rect.Empty;
+                _full_window_resize_mode = ResizeMode.NoResize;
+                _full_window_rect = Rect.Empty;
             }
 
             //变成无边窗体
@@ -66,7 +66,7 @@ namespace IamI.Lib.WPF
             window.Deactivated += Window_Deactivated;
 
             //记住成功最大化的窗体
-            fullWindow = window;
+            _full_window = window;
         }
 
         private static void Window_Deactivated(object sender, EventArgs e)
@@ -83,34 +83,34 @@ namespace IamI.Lib.WPF
         /// 退出全屏
         /// </summary>
         /// <param name="window"></param>
-        /// <param name="loadMessage">指示是否读取窗口信息。</param>
-        public static void ExitFullscreen(this Window window, bool loadMessage = true)
+        /// <param name="load_message">指示是否读取窗口信息。</param>
+        public static void ExitFullscreen(this Window window, bool load_message = true)
         {
             //已经不是全屏无操作
             if (!window.IsFullscreen()) return;
             //恢复窗口先前信息，这样就退出了全屏
-            window.Topmost = fullWindowTopMost;
-            window.WindowStyle = fullWindowStyle;
+            window.Topmost = _full_window_top_most;
+            window.WindowStyle = _full_window_style;
             window.ResizeMode = ResizeMode.CanResize;//设置为可调整窗体大小
-            if (loadMessage)
+            if (load_message)
             {
-                if (fullWindowRect == Rect.Empty)
+                if (_full_window_rect == Rect.Empty)
                     Basic.Log.Logger.Default.Warning("Fullscreen Want to load window message while nothing in it.");
                 else
                 {
-                    window.Left = fullWindowRect.Left;
-                    window.Width = fullWindowRect.Width;
-                    window.Top = fullWindowRect.Top;
-                    window.Height = fullWindowRect.Height;
-                    window.WindowState = fullWindowState;//恢复窗口状态信息    
+                    window.Left = _full_window_rect.Left;
+                    window.Width = _full_window_rect.Width;
+                    window.Top = _full_window_rect.Top;
+                    window.Height = _full_window_rect.Height;
+                    window.WindowState = _full_window_state;//恢复窗口状态信息    
                 }
             }
-            window.ResizeMode = fullWindowResizeMode;//恢复窗口可调整信息
+            window.ResizeMode = _full_window_resize_mode;//恢复窗口可调整信息
 
             //移除不需要的事件
             window.Activated -= Window_Activated;
             window.Deactivated -= Window_Deactivated;
-            fullWindow = null;
+            _full_window = null;
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace IamI.Lib.WPF
         {
             if (window == null)
                 throw new ArgumentNullException(nameof(window));
-            return Equals(fullWindow, window);
+            return Equals(_full_window, window);
         }
     }
 }

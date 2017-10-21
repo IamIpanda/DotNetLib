@@ -13,20 +13,20 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         public abstract void Write(BinaryWriter writer);
         public virtual object TransformToNativeModel() { return this; }
 
-        private static readonly Dictionary<string, Type> user_defined_types = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, Type> UserDefinedTypes = new Dictionary<string, Type>();
 
         protected static void RegisterUserDefinedType(Type type, string name = null)
         {
             if (name == null) name = type.Name;
-            if (user_defined_types.ContainsKey(name))
+            if (UserDefinedTypes.ContainsKey(name))
             {
-                Logger.Default.Warning($"Trying to override register ruby marshal user defined object: [{name}] from {user_defined_types[name].FullName} to {type.FullName}");
-                user_defined_types[name] = type;
+                Logger.Default.Warning($"Trying to override register ruby marshal user defined object: [{name}] from {UserDefinedTypes[name].FullName} to {type.FullName}");
+                UserDefinedTypes[name] = type;
             }
             else
             {
                 Logger.Default.Debug($"Registered ruby marshal user defined object: [{name}] {type.FullName}");
-                user_defined_types.Add(name, type);
+                UserDefinedTypes.Add(name, type);
             }
         }
 
@@ -45,7 +45,7 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
 
         public static RubyUserDefinedObject TryGetUserDefinedObject(string type)
         {
-            if (user_defined_types.ContainsKey(type)) return Activator.CreateInstance(user_defined_types[type]) as RubyUserDefinedObject;
+            if (UserDefinedTypes.ContainsKey(type)) return Activator.CreateInstance(UserDefinedTypes[type]) as RubyUserDefinedObject;
             return null;
         }
     }

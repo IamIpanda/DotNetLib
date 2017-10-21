@@ -65,16 +65,16 @@ namespace IamI.Lib.Serialization.RubyMarshal.OriginModel
         [Serializable]
         public class RubyObjectInstanceVariableProxy
         {
-            private readonly RubyObject obj;
-            internal RubyObjectInstanceVariableProxy(RubyObject obj) { this.obj = obj; }
+            private readonly RubyObject _obj;
+            internal RubyObjectInstanceVariableProxy(RubyObject obj) { this._obj = obj; }
 
             public object this[RubySymbol key]
             {
-                get { return obj.InstanceVariables.ContainsKey(key) ? obj.InstanceVariables[key] is RubyNil ? null : obj.InstanceVariables[key] : null; }
+                get { return _obj.InstanceVariables.ContainsKey(key) ? _obj.InstanceVariables[key] is RubyNil ? null : _obj.InstanceVariables[key] : null; }
                 set
                 {
-                    if (obj.InstanceVariables.ContainsKey(key)) obj.InstanceVariables[key] = value;
-                    else obj.InstanceVariables.Add(key, value);
+                    if (_obj.InstanceVariables.ContainsKey(key)) _obj.InstanceVariables[key] = value;
+                    else _obj.InstanceVariables.Add(key, value);
                 }
             }
 

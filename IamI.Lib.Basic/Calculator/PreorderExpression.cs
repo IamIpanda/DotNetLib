@@ -1,17 +1,19 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using IamI.Lib.Basic.Calculator.CalculatorNode;
+using IamI.Lib.Basic.Log;
 
 namespace IamI.Lib.Basic.Calculator
 {
     /// <summary>
-    /// Ç°Ğò±í´ïÊ½µÄ·â×°Àà
+    ///     å‰åºè¡¨è¾¾å¼çš„å°è£…ç±»
     /// </summary>
     public class PreorderExpression
     {
         public Stack<CalculatorNode.CalculatorNode> Nodes { get; set; }
 
-        public Dictionary<string, VariableCalculatorNode> Variables { get; } = new Dictionary<string, VariableCalculatorNode>();
+        public Dictionary<string, VariableCalculatorNode> Variables { get; } =
+            new Dictionary<string, VariableCalculatorNode>();
 
         private PreorderExpression(Stack<CalculatorNode.CalculatorNode> nodes)
         {
@@ -20,7 +22,7 @@ namespace IamI.Lib.Basic.Calculator
         }
 
         /// <summary>
-        /// Ë÷ÒıËùÓĞ±äÁ¿½Úµã¡£
+        ///     ç´¢å¼•æ‰€æœ‰å˜é‡èŠ‚ç‚¹ã€‚
         /// </summary>
         protected void BuildVariableRelationship()
         {
@@ -29,25 +31,30 @@ namespace IamI.Lib.Basic.Calculator
         }
 
         /// <summary>
-        /// ½«ËùÓĞ±äÁ¿½ÚµãÈ«²¿ÉèÖÃÎª0¡£
+        ///     å°†æ‰€æœ‰å˜é‡èŠ‚ç‚¹å…¨éƒ¨è®¾ç½®ä¸º0ã€‚
         /// </summary>
-        public void InitializeVariables() { Nodes.OfType<VariableCalculatorNode>().ToList().ForEach(node => node.Value = 0); }
-
-        /// <summary>
-        /// °´ÕÕ¸ø¶¨µÄÃû³Æ£¬ÉèÖÃ±äÁ¿½ÚµãµÄÖµ¡£
-        /// </summary>
-        /// <param name="variable_name">±äÁ¿½ÚµãµÄÃû³Æ</param>
-        /// <param name="value">±äÁ¿½ÚµãµÄÖµ</param>
-        public void SetVariable(string variable_name, double value)
+        public void InitializeVariables()
         {
-            if (Variables.ContainsKey(variable_name)) Variables[variable_name].Value = value;
-            else Log.Logger.Default.Warning($"Trying to set a variable named {variable_name} = {value} in calculator, but it doesn't exists. Nothing done.");
+            Nodes.OfType<VariableCalculatorNode>().ToList().ForEach(node => node.Value = 0);
         }
 
         /// <summary>
-        /// °´ÕÕ¸ø¶¨µÄ¶à¸öÃû³Æ£¬ÉèÖÃ±äÁ¿½ÚµãµÄÖµ¡£
+        ///     æŒ‰ç…§ç»™å®šçš„åç§°ï¼Œè®¾ç½®å˜é‡èŠ‚ç‚¹çš„å€¼ã€‚
         /// </summary>
-        /// <param name="values">±äÁ¿½ÚµãµÄÃû³ÆºÍ±äÁ¿½ÚµãµÄÖµµÄ¶ÔÓ¦±í¡£</param>
+        /// <param name="variable_name">å˜é‡èŠ‚ç‚¹çš„åç§°</param>
+        /// <param name="value">å˜é‡èŠ‚ç‚¹çš„å€¼</param>
+        public void SetVariable(string variable_name, double value)
+        {
+            if (Variables.ContainsKey(variable_name)) Variables[variable_name].Value = value;
+            else
+                Logger.Default.Warning(
+                    $"Trying to set a variable named {variable_name} = {value} in calculator, but it doesn't exists. Nothing done.");
+        }
+
+        /// <summary>
+        ///     æŒ‰ç…§ç»™å®šçš„å¤šä¸ªåç§°ï¼Œè®¾ç½®å˜é‡èŠ‚ç‚¹çš„å€¼ã€‚
+        /// </summary>
+        /// <param name="values">å˜é‡èŠ‚ç‚¹çš„åç§°å’Œå˜é‡èŠ‚ç‚¹çš„å€¼çš„å¯¹åº”è¡¨ã€‚</param>
         public void SetVariables(Dictionary<string, double> values)
         {
             InitializeVariables();
@@ -55,68 +62,74 @@ namespace IamI.Lib.Basic.Calculator
         }
 
         /// <summary>
-        /// ÒÀ´ÎÉèÖÃ±äÁ¿½Úµã¡£
-        /// ºöÂÔÄÇĞ©±äÁ¿½ÚµãµÄÃû³Æ¡£
+        ///     ä¾æ¬¡è®¾ç½®å˜é‡èŠ‚ç‚¹ã€‚
+        ///     å¿½ç•¥é‚£äº›å˜é‡èŠ‚ç‚¹çš„åç§°ã€‚
         /// </summary>
-        /// <param name="values">±äÁ¿ÖµÁĞ±í</param>
+        /// <param name="values">å˜é‡å€¼åˆ—è¡¨</param>
         public void SetVariables(IEnumerable<double> values)
         {
             var variable_node_list = Variables.Values.ToList();
             var value_list = values.ToList();
-            for (var i = 0; i < variable_node_list.Count && i < value_list.Count; i++) variable_node_list[i].Value = value_list[i];
+            for (var i = 0; i < variable_node_list.Count && i < value_list.Count; i++)
+                variable_node_list[i].Value = value_list[i];
         }
 
         /// <summary>
-        /// °´ÕÕ¸ø¶¨µÄÃû³Æ£¬ÉèÖÃ±äÁ¿½ÚµãµÄÖµ¡£
-        /// ¸Ã·½·¨ÊÇ @SetVariable µÄ×ª·¢¡£
+        ///     æŒ‰ç…§ç»™å®šçš„åç§°ï¼Œè®¾ç½®å˜é‡èŠ‚ç‚¹çš„å€¼ã€‚
+        ///     è¯¥æ–¹æ³•æ˜¯ @SetVariable çš„è½¬å‘ã€‚
         /// </summary>
-        /// <param name="variable_name">±äÁ¿½ÚµãµÄÃû³Æ</param>
-        public double this[string variable_name] { set { SetVariable(variable_name, value); } }
+        /// <param name="variable_name">å˜é‡èŠ‚ç‚¹çš„åç§°</param>
+        public double this[string variable_name]
+        {
+            set => SetVariable(variable_name, value);
+        }
 
         /// <summary>
-        /// ½«´ËÇ°Ğò±í´ïÊ½×ª»¯Îª¼ÆËãÆ÷¡£
+        ///     å°†æ­¤å‰åºè¡¨è¾¾å¼è½¬åŒ–ä¸ºè®¡ç®—å™¨ã€‚
         /// </summary>
-        /// <returns>´ËÇ°Ğò±í´ïÊ½µÄ¼ÆËãÆ÷·â×°£¬</returns>
-        public CalculatorMachine ToCalculateMachine() { return CalculatorMachine.FromPreorderExpression(this); }
+        /// <returns>æ­¤å‰åºè¡¨è¾¾å¼çš„è®¡ç®—å™¨å°è£…ï¼Œ</returns>
+        public CalculatorMachine ToCalculateMachine()
+        {
+            return CalculatorMachine.FromPreorderExpression(this);
+        }
 
         /// <summary>
-        /// ½«Ò»¸öÖĞĞò±í´ïÊ½×ª»¯ÎªÄæ²¨À¼±í´ïÊ½¡£
+        ///     å°†ä¸€ä¸ªä¸­åºè¡¨è¾¾å¼è½¬åŒ–ä¸ºé€†æ³¢å…°è¡¨è¾¾å¼ã€‚
         /// </summary>
-        /// <param name="sequential_expression">Òª×ª»¯µÄÖĞĞò±í´ïÊ½</param>
-        /// <returns>¶ÔÓ¦µÄÄæ²¨À¼±í´ïÊ½½á¹¹</returns>
+        /// <param name="sequential_expression">è¦è½¬åŒ–çš„ä¸­åºè¡¨è¾¾å¼</param>
+        /// <returns>å¯¹åº”çš„é€†æ³¢å…°è¡¨è¾¾å¼ç»“æ„</returns>
         /// <remarks>
-        /// ½«ÖĞ×º±í´ïÊ½×ª»»³Éºó×º±í´ïÊ½Ëã·¨£º
-        /// 1¡¢´Ó×óÖÁÓÒÉ¨ÃèÒ»ÖĞ×º±í´ïÊ½¡£
-        /// 2 ¡¢Èô¶ÁÈ¡µÄÊÇ²Ù×÷Êı£¬ÔòÅĞ¶Ï¸Ã²Ù×÷ÊıµÄÀàĞÍ£¬²¢½«¸Ã²Ù×÷Êı´æÈë²Ù×÷Êı¶ÑÕ»
-        /// 3¡¢Èô¶ÁÈ¡µÄÊÇÔËËã·û
-        /// (1) ¸ÃÔËËã·ûÎª×óÀ¨ºÅ"("£¬ÔòÖ±½Ó´æÈëÔËËã·û¶ÑÕ»¡£
-        /// (2) ¸ÃÔËËã·ûÎªÓÒÀ¨ºÅ")"£¬ÔòÊä³öÔËËã·û¶ÑÕ»ÖĞµÄÔËËã·ûµ½²Ù×÷Êı¶ÑÕ»£¬Ö±µ½Óöµ½×óÀ¨ºÅÎªÖ¹¡£
-        /// (3) ¸ÃÔËËã·ûÎª·ÇÀ¨ºÅÔËËã·û£º
-        /// (a) ÈôÔËËã·û¶ÑÕ»Õ»¶¥µÄÔËËã·ûÎªÀ¨ºÅ£¬ÔòÖ±½Ó´æÈëÔËËã·û¶ÑÕ»¡£
-        /// (b) Èô±ÈÔËËã·û¶ÑÕ»Õ»¶¥µÄÔËËã·ûÓÅÏÈ¼¶¸ß»òÏàµÈ£¬ÔòÖ±½Ó´æÈëÔËËã·û¶ÑÕ»¡£
-        /// (c) Èô±ÈÔËËã·û¶ÑÕ»Õ»¶¥µÄÔËËã·ûÓÅÏÈ¼¶µÍ£¬ÔòÊä³öÕ»¶¥ÔËËã·ûµ½²Ù×÷Êı¶ÑÕ»£¬²¢½«µ±Ç°ÔËËã·ûÑ¹ÈëÔËËã·û¶ÑÕ»¡£
-        /// 4¡¢µ±±í´ïÊ½¶ÁÈ¡Íê³ÉºóÔËËã·û¶ÑÕ»ÖĞÉĞÓĞÔËËã·ûÊ±£¬ÔòÒÀĞòÈ¡³öÔËËã·ûµ½²Ù×÷Êı¶ÑÕ»£¬Ö±µ½ÔËËã·û¶ÑÕ»Îª¿Õ¡£
+        ///     å°†ä¸­ç¼€è¡¨è¾¾å¼è½¬æ¢æˆåç¼€è¡¨è¾¾å¼ç®—æ³•ï¼š
+        ///     1ã€ä»å·¦è‡³å³æ‰«æä¸€ä¸­ç¼€è¡¨è¾¾å¼ã€‚
+        ///     2 ã€è‹¥è¯»å–çš„æ˜¯æ“ä½œæ•°ï¼Œåˆ™åˆ¤æ–­è¯¥æ“ä½œæ•°çš„ç±»å‹ï¼Œå¹¶å°†è¯¥æ“ä½œæ•°å­˜å…¥æ“ä½œæ•°å †æ ˆ
+        ///     3ã€è‹¥è¯»å–çš„æ˜¯è¿ç®—ç¬¦
+        ///     (1) è¯¥è¿ç®—ç¬¦ä¸ºå·¦æ‹¬å·"("ï¼Œåˆ™ç›´æ¥å­˜å…¥è¿ç®—ç¬¦å †æ ˆã€‚
+        ///     (2) è¯¥è¿ç®—ç¬¦ä¸ºå³æ‹¬å·")"ï¼Œåˆ™è¾“å‡ºè¿ç®—ç¬¦å †æ ˆä¸­çš„è¿ç®—ç¬¦åˆ°æ“ä½œæ•°å †æ ˆï¼Œç›´åˆ°é‡åˆ°å·¦æ‹¬å·ä¸ºæ­¢ã€‚
+        ///     (3) è¯¥è¿ç®—ç¬¦ä¸ºéæ‹¬å·è¿ç®—ç¬¦ï¼š
+        ///     (a) è‹¥è¿ç®—ç¬¦å †æ ˆæ ˆé¡¶çš„è¿ç®—ç¬¦ä¸ºæ‹¬å·ï¼Œåˆ™ç›´æ¥å­˜å…¥è¿ç®—ç¬¦å †æ ˆã€‚
+        ///     (b) è‹¥æ¯”è¿ç®—ç¬¦å †æ ˆæ ˆé¡¶çš„è¿ç®—ç¬¦ä¼˜å…ˆçº§é«˜æˆ–ç›¸ç­‰ï¼Œåˆ™ç›´æ¥å­˜å…¥è¿ç®—ç¬¦å †æ ˆã€‚
+        ///     (c) è‹¥æ¯”è¿ç®—ç¬¦å †æ ˆæ ˆé¡¶çš„è¿ç®—ç¬¦ä¼˜å…ˆçº§ä½ï¼Œåˆ™è¾“å‡ºæ ˆé¡¶è¿ç®—ç¬¦åˆ°æ“ä½œæ•°å †æ ˆï¼Œå¹¶å°†å½“å‰è¿ç®—ç¬¦å‹å…¥è¿ç®—ç¬¦å †æ ˆã€‚
+        ///     4ã€å½“è¡¨è¾¾å¼è¯»å–å®Œæˆåè¿ç®—ç¬¦å †æ ˆä¸­å°šæœ‰è¿ç®—ç¬¦æ—¶ï¼Œåˆ™ä¾åºå–å‡ºè¿ç®—ç¬¦åˆ°æ“ä½œæ•°å †æ ˆï¼Œç›´åˆ°è¿ç®—ç¬¦å †æ ˆä¸ºç©ºã€‚
         /// </remarks>
         public static PreorderExpression FromSeqientialExpression(SequentialExpression sequential_expression)
         {
             var operator_stack = new Stack<CalculatorNode.CalculatorNode>();
             var number_stack = new Stack<CalculatorNode.CalculatorNode>();
-            operator_stack.Push(new OperatorCalculatorNode() {Operator = ' '});
+            operator_stack.Push(new OperatorCalculatorNode {Operator = ' '});
             foreach (var node in sequential_expression.Nodes)
-            {
-                // ÎªÁËÊµÏÖº¯ÊıÀà²Ù×÷·û¹¦ÄÜ£¬½«º¯Êıµ±×öÒ»¸öÔËËã·û´¦Àí¡£
+                // ä¸ºäº†å®ç°å‡½æ•°ç±»æ“ä½œç¬¦åŠŸèƒ½ï¼Œå°†å‡½æ•°å½“åšä¸€ä¸ªè¿ç®—ç¬¦å¤„ç†ã€‚
                 if (node is OperatorCalculatorNode || node is FunctionCalculatorNode)
                 {
-                    // ¶ÔÓÚº¯ÊıÀà²Ù×÷·û¶øÑÔ£¬Ëü½öÊÇÒ»¸ö·ÇÀ¨ºÅÔËËã·û£¬¶øÊÇºÎÔËËã·û²¢²»ÖØÒª¡£
-                    // ¶ø½öÓĞËüµÄÓÅÏÈ¼¶ÉúĞ§¡£
+                    // å¯¹äºå‡½æ•°ç±»æ“ä½œç¬¦è€Œè¨€ï¼Œå®ƒä»…æ˜¯ä¸€ä¸ªéæ‹¬å·è¿ç®—ç¬¦ï¼Œè€Œæ˜¯ä½•è¿ç®—ç¬¦å¹¶ä¸é‡è¦ã€‚
+                    // è€Œä»…æœ‰å®ƒçš„ä¼˜å…ˆçº§ç”Ÿæ•ˆã€‚
                     var node_operator = (node as OperatorCalculatorNode)?.Operator ?? ' ';
                     switch (node_operator)
                     {
-                        // ×óÀ¨ºÅÖ±Ñ¹Õ»
+                        // å·¦æ‹¬å·ç›´å‹æ ˆ
                         case '(':
                             operator_stack.Push(node);
                             break;
-                        // ÓÒÀ¨ºÅµ¯Õ»Ö±µ½¿´¼û×óÀ¨ºÅÎªÖ¹¡£
+                        // å³æ‹¬å·å¼¹æ ˆç›´åˆ°çœ‹è§å·¦æ‹¬å·ä¸ºæ­¢ã€‚
                         case ')':
                             var last_node = operator_stack.Pop();
                             while (!last_node.IsLeftBracket())
@@ -124,36 +137,41 @@ namespace IamI.Lib.Basic.Calculator
                                 number_stack.Push(last_node);
                                 if (operator_stack.Count == 0)
                                 {
-                                    Log.Logger.Default.Warning("Not enough left bracket for right bracket.");
+                                    Logger.Default.Warning("Not enough left bracket for right bracket.");
                                     break;
                                 }
                                 last_node = operator_stack.Pop();
                             }
                             break;
-                        // ²Ù×÷·ûÊ±
+                        // æ“ä½œç¬¦æ—¶
                         default:
                             var operator_stack_top_node = operator_stack.Peek();
                             var current_node_rank = node.Rank();
                             var top_node_rank = operator_stack_top_node.Rank();
-                            // Õ»¶¥Îª×óÀ¨ºÅ»ò¸ßÓÅÏÈ¼¶µÄ³¡ºÏ£¬Ö±Ñ¹Õ»
-                            if (operator_stack_top_node.IsLeftBracket() || current_node_rank >= top_node_rank) operator_stack.Push(node);
-                            // ·ñÔò£¬µ¯Õ»Ö±µ½Âú×ãÌõ¼ş£¬È»ºóÑ¹Õ»
+                            // æ ˆé¡¶ä¸ºå·¦æ‹¬å·æˆ–é«˜ä¼˜å…ˆçº§çš„åœºåˆï¼Œç›´å‹æ ˆ
+                            if (operator_stack_top_node.IsLeftBracket() || current_node_rank >= top_node_rank)
+                            {
+                                operator_stack.Push(node);
+                            }
+                            // å¦åˆ™ï¼Œå¼¹æ ˆç›´åˆ°æ»¡è¶³æ¡ä»¶ï¼Œç„¶åå‹æ ˆ
                             else
                             {
-                                while (operator_stack.Peek().Rank() >= current_node_rank) number_stack.Push(operator_stack.Pop());
+                                while (operator_stack.Peek().Rank() >= current_node_rank)
+                                    number_stack.Push(operator_stack.Pop());
                                 operator_stack.Push(node);
                             }
                             break;
                     }
                 }
                 else
-                    // ²Ù×÷ÊıÖ±Ñ¹Õ»
+                    // æ“ä½œæ•°ç›´å‹æ ˆ
+                {
                     number_stack.Push(node);
-            }
-            // Ê£ÓàµÄ²Ù×÷·ûÑ¹Õ»
+                }
+            // å‰©ä½™çš„æ“ä½œç¬¦å‹æ ˆ
             // ReSharper disable once InvertIf
             if (operator_stack.Count != 0)
-                // ×îÏÂÃæÓĞ¸ö¿Õ²Ù×÷·û£¬²»½øÕ»
+                // æœ€ä¸‹é¢æœ‰ä¸ªç©ºæ“ä½œç¬¦ï¼Œä¸è¿›æ ˆ
                 while (operator_stack.Count > 1) number_stack.Push(operator_stack.Pop());
             return new PreorderExpression(new Stack<CalculatorNode.CalculatorNode>(number_stack));
         }
